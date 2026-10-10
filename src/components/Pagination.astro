@@ -1,0 +1,141 @@
+---
+import { url } from '../lib/content';
+import Icon from './Icon.astro';
+
+interface Props {
+  page: number;
+  total: number;
+  /** Path of the first page, e.g. "/news/"; later pages live at "<base>page/<n>/". */
+  base: string;
+}
+
+const { page, total, base } = Astro.props;
+const href = (n: number) => url(n === 1 ? base : `${base}page/${n}/`);
+
+// 1 … 4 5 [6] 7 8 … 54
+const numbers: (number | null)[] = [];
+for (let n = 1; n <= total; n++) {
+  if (n === 1 || n === total || Math.abs(n - page) <= 2) numbers.push(n);
+  else if (numbers.at(-1) !== null) numbers.push(null);
+}
+---
+
+{
+  total > 1 && (
+    <nav class="pagination" aria-label="Страницы">
+      {page > 1 ? (
+        <a class="pagination__step" href={href(page - 1)} rel="prev">
+          <Icon name="arrow-left" size={18} />
+          <span>Назад</span>
+        </a>
+      ) : (
+        <span class="pagination__step is-disabled" aria-hidden="true">
+          <Icon name="arrow-left" size={18} />
+          <span>Назад</span>
+        </span>
+      )}
+      <ol role="list">
+        {numbers.map((n) =>
+          n === null ? (
+            <li class="pagination__gap" aria-hidden="true">
+              …
+            </li>
+          ) : (
+            <li>
+              <a href={href(n)} aria-current={n === page ? 'page' : undefined} aria-label={`Страница ${n}`}>
+                {n}
+              </a>
+            </li>
+          ),
+        )}
+      </ol>
+      {page < total ? (
+        <a class="pagination__step" href={href(page + 1)} rel="next">
+          <span>Дальше</span>
+          <Icon name="arrow-right" size={18} />
+        </a>
+      ) : (
+        <span class="pagination__step is-disabled" aria-hidden="true">
+          <span>Дальше</span>
+          <Icon name="arrow-right" size={18} />
+        </span>
+      )}
+    </nav>
+  )
+}
+
+<style>
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  ol a,
+  .pagination__gap {
+    display: grid;
+    place-items: center;
+    min-width: 44px;
+    height: 44px;
+    padding-inline: 8px;
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--ink-2);
+  }
+
+  ol a:hover {
+    background: var(--mist);
+  }
+
+  ol a[aria-current='page'] {
+    background: var(--ink);
+    color: #fff;
+  }
+
+  .pagination__step {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    padding-inline: 18px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--ink);
+  }
+
+  a.pagination__step:hover {
+    border-color: var(--ink);
+  }
+
+  .pagination__step.is-disabled {
+    opacity: 0.4;
+  }
+
+  @media (max-width: 599px) {
+    ol {
+      order: -1;
+      width: 100%;
+    }
+
+    .pagination__step {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+</style>

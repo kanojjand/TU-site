@@ -1,0 +1,105 @@
+---
+// "In this section" list next to a content page; below the content on phones.
+import { isExternal, type NavSection } from '../config/navigation';
+import { url } from '../lib/content';
+import Icon from './Icon.astro';
+
+interface Props {
+  section: NavSection;
+}
+
+const { section } = Astro.props;
+const path = Astro.url.pathname;
+---
+
+<aside class="section-nav">
+  <nav aria-label={`Раздел «${section.label}»`}>
+    <p class="section-nav__title">Раздел «{section.label}»</p>
+    {
+      section.groups.map((group) => (
+        <div class="section-nav__group">
+          {section.groups.length > 1 && <p class="section-nav__group-title">{group.title}</p>}
+          <ul role="list">
+            {group.links.map((link) => (
+              <li>
+                <a
+                  href={url(link.href)}
+                  aria-current={url(link.href) === path ? 'page' : undefined}
+                  {...(isExternal(link.href) ? { target: '_blank', rel: 'noopener' } : {})}
+                >
+                  {link.label}
+                  {isExternal(link.href) && <Icon name="external" size={14} />}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </nav>
+</aside>
+
+<style>
+  .section-nav nav {
+    padding: 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .section-nav__title {
+    margin-bottom: 14px;
+    font-weight: 700;
+    font-size: 1.125rem;
+  }
+
+  .section-nav__group + .section-nav__group {
+    margin-top: 18px;
+  }
+
+  .section-nav__group-title {
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-inline: -10px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    color: var(--ink-2);
+    line-height: 1.35;
+    text-decoration: none;
+    transition:
+      background-color 0.15s var(--ease),
+      color 0.15s var(--ease);
+  }
+
+  a:hover {
+    background: var(--mist);
+    color: var(--ink);
+  }
+
+  a[aria-current='page'] {
+    background: var(--red-50);
+    color: var(--red-700);
+    font-weight: 700;
+  }
+
+  a :global(.icon) {
+    flex: none;
+    color: var(--muted);
+  }
+</style>

@@ -1,0 +1,277 @@
+{
+  "generatedAt": "2026-10-10T12:26:08.178Z",
+  "counts": {
+    "pages": 70,
+    "news": 16,
+    "faculties": 0,
+    "departments": 0,
+    "people": 5,
+    "missing": 43,
+    "redirected": 0,
+    "deadLinks": 38,
+    "imageFailures": 7
+  },
+  "missing": [
+    {
+      "url": "https://tashenev.edu.kz/ru/departments",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/profile-pander",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/kabyldau",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/15",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/23",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/12",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/13",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/14",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/18",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/19",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/17",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/20",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/24",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/25",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/16",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/22",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/27",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/9",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/21",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/events-calendar",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/1",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/3",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/2",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/4",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/5",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/8",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/9",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/faculties/10",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/documents",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/facts",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/graduates",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/science",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/leadership-in/36",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/leadership-in/34",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/leadership-in/39",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/N",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/hQw",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/htthu",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/httpig6",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/media/item/1289",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/media/item/1286",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/media/item/1287",
+      "status": 0,
+      "error": "HTTP 429"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/media/item/1288",
+      "status": 0,
+      "error": "HTTP 429"
+    }
+  ],
+  "redirected": [],
+  "deadLinks": [
+    "/faculties/1/",
+    "/faculties/10/",
+    "/faculties/2/",
+    "/faculties/3/",
+    "/faculties/4/",
+    "/faculties/5/",
+    "/faculties/8/",
+    "/faculties/9/",
+    "/hqw/",
+    "/htthu/",
+    "/httpig6/",
+    "/kabyldau/",
+    "/n/",
+    "/news/1050/",
+    "/news/227/",
+    "/news/570/",
+    "/news/572/",
+    "/news/573/",
+    "/news/574/",
+    "/news/575/",
+    "/news/576/",
+    "/news/577/",
+    "/news/579/",
+    "/news/580/",
+    "/news/581/",
+    "/news/582/",
+    "/news/583/",
+    "/news/584/",
+    "/news/585/",
+    "/news/586/",
+    "/news/587/",
+    "/news/588/",
+    "/news/589/",
+    "/news/590/",
+    "/news/591/",
+    "/news/593/",
+    "/news/594/",
+    "/profile-pander/"
+  ],
+  "imageFailures": [
+    "https://tashenev.edu.kz/assets/img/Saduak.jpg",
+    "https://tashenev.edu.kz/images/.jpg",
+    "https://tashenev.edu.kz/assets/img/8.jpg",
+    "https://tashenev.edu.kz/assets/img/library-2.png",
+    "https://tashenev.edu.kz/img/oxford.jpg",
+    "https://tashenev.edu.kz/assets/img/library-3.png",
+    "https://tashenev.edu.kz/docs/Academ/Bazarkul.jpeg"
+  ]
+}

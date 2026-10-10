@@ -1,0 +1,86 @@
+---
+import Icon from '../components/Icon.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/content';
+
+const links = [
+  { label: 'Поступление', href: '/enrolle/' },
+  { label: 'Институты и факультеты', href: '/faculties/' },
+  { label: 'Новости', href: '/news/' },
+  { label: 'Контакты', href: '/contacts/' },
+];
+---
+
+<BaseLayout title="Страница не найдена" searchable={false}>
+  <section class="not-found">
+    <img class="not-found__mark" src={url('/brand/mark.svg')} alt="" aria-hidden="true" width="160" height="200" />
+    <div class="container not-found__inner">
+      <p class="eyebrow">Ошибка 404</p>
+      <h1>Такой страницы нет</h1>
+      <p class="lead">Возможно, она переехала при обновлении сайта. Попробуйте поиск или перейдите в один из разделов.</p>
+      <form class="not-found__search" action={url('/search/')} method="get" role="search">
+        <label class="visually-hidden" for="nf-q">Поиск по сайту</label>
+        <input id="nf-q" name="q" type="search" placeholder="Что вы ищете?" />
+        <button class="btn btn--primary" type="submit"><Icon name="search" size={18} /> Найти</button>
+      </form>
+      <ul class="not-found__links" role="list">
+        {links.map((link) => <li><a class="btn btn--ghost btn--sm" href={url(link.href)}>{link.label}</a></li>)}
+      </ul>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    position: relative;
+    overflow: hidden;
+    background: var(--mist);
+  }
+
+  .not-found__mark {
+    position: absolute;
+    right: -60px;
+    bottom: -80px;
+    width: 420px;
+    opacity: 0.08;
+  }
+
+  .not-found__inner {
+    position: relative;
+    max-width: 760px;
+    padding-block: clamp(64px, 10vw, 140px);
+  }
+
+  h1 {
+    font-size: var(--step-4);
+  }
+
+  .lead {
+    margin-top: 16px;
+  }
+
+  .not-found__search {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 32px;
+  }
+
+  .not-found__search input {
+    flex: 1 1 260px;
+    height: 48px;
+    padding: 0 20px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    font: inherit;
+  }
+
+  .not-found__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

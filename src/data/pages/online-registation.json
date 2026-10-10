@@ -1,0 +1,12 @@
+{
+  "slug": "online-registation",
+  "title": "Онлайн регистрация",
+  "description": "Электронная регистрация на пользование ресурсами и сервисами университета",
+  "hero": {
+    "src": "/media/hero/a87283d26144473d-1600.webp",
+    "width": 1274,
+    "height": 478
+  },
+  "html": "",
+  "source": "https://tashenev.edu.kz/ru/online-registation"
+}

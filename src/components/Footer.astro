@@ -1,0 +1,224 @@
+---
+import { footerColumns, services } from '../config/navigation';
+import { ORIGINAL_SITE, site, url } from '../lib/content';
+import Icon from './Icon.astro';
+
+const { phone, email, address } = site.contacts;
+const tel = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null;
+const year = new Date().getFullYear();
+const socialIcon = (href: string) =>
+  /instagram/i.test(href)
+    ? 'instagram'
+    : /facebook/i.test(href)
+      ? 'facebook'
+      : /youtube/i.test(href)
+        ? 'youtube'
+        : /t\.me|telegram/i.test(href)
+          ? 'telegram'
+          : 'globe';
+const socials = site.socials.filter((s, i, all) => all.findIndex((other) => socialIcon(other.href) === socialIcon(s.href)) === i);
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <a href={url('/')} class="footer__logo">
+        <img src={url('/brand/logo-white.svg')} alt="Tashenev University" width="187" height="60" loading="lazy" />
+      </a>
+      <p>Университет имени Жумабека Ахметулы Ташенева. Готовим специалистов с 1998 года.</p>
+      <div class="footer__social">
+        {
+          socials.map((social) => (
+            <a href={social.href} target="_blank" rel="noopener" aria-label={social.title || socialIcon(social.href)}>
+              <Icon name={socialIcon(social.href)} size={20} />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+
+    {
+      footerColumns.map((column) => (
+        <nav class="footer__col" aria-label={column.title}>
+          <p class="footer__title">{column.title}</p>
+          <ul role="list">
+            {column.links.map((link) => (
+              <li>
+                <a href={url(link.href)}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ))
+    }
+
+    <div class="footer__col">
+      <p class="footer__title">Контакты</p>
+      <ul role="list" class="footer__contacts">
+        {address && <li><Icon name="pin" size={18} /><span>{address}</span></li>}
+        {phone && <li><Icon name="phone" size={18} /><a href={tel}>{phone}</a></li>}
+        {email && <li><Icon name="mail" size={18} /><a href={`mailto:${email}`}>{email}</a></li>}
+      </ul>
+      <a class="btn btn--outline-light btn--sm footer__contacts-btn" href={url('/contacts/')}>Все контакты</a>
+    </div>
+  </div>
+
+  {
+    services.length > 0 && (
+      <div class="container footer__services">
+        <p class="footer__title">e-University</p>
+        <ul role="list">
+          {services.map((service) => (
+            <li>
+              <a href={service.href} target="_blank" rel="noopener">
+                {service.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )
+  }
+
+  <div class="container footer__bottom">
+    <p>© 1998–{year} Университет имени Ж. А. Ташенева</p>
+    <p>
+      <a href={url('/sitemap/')}>Карта сайта</a>
+      <span aria-hidden="true">·</span>
+      <a href={ORIGINAL_SITE} target="_blank" rel="noopener">Источник контента: tashenev.edu.kz</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    margin-top: auto;
+    padding-top: clamp(56px, 7vw, 88px);
+    background: var(--night);
+    color: rgb(255 255 255 / 0.72);
+    font-size: 0.9688rem;
+  }
+
+  .footer a {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+  }
+
+  .footer a:hover {
+    color: #fff;
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: 40px 32px;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 640px) {
+    .footer__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .footer__grid {
+      grid-template-columns: 1.4fr repeat(3, minmax(0, 1fr)) 1.3fr;
+    }
+  }
+
+  .footer__logo img {
+    height: 52px;
+    width: auto;
+  }
+
+  .footer__brand p {
+    max-width: 34ch;
+    margin-top: 18px;
+  }
+
+  .footer__social {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+  }
+
+  .footer__social a {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 999px;
+    transition:
+      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  .footer__social a:hover {
+    border-color: var(--red);
+    background: var(--red);
+  }
+
+  .footer__title {
+    margin-bottom: 14px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .footer ul {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer__contacts li {
+    display: flex;
+    gap: 10px;
+  }
+
+  .footer__contacts :global(.icon) {
+    flex: none;
+    margin-top: 3px;
+    color: var(--red);
+  }
+
+  .footer__contacts-btn {
+    margin-top: 18px;
+  }
+
+  .footer__services {
+    margin-top: 48px;
+    padding-top: 28px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+  }
+
+  .footer__services ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-top: 28px;
+    padding-block: 24px 32px;
+    border-top: 1px solid rgb(255 255 255 / 0.12);
+    font-size: 0.875rem;
+    color: rgb(255 255 255 / 0.55);
+  }
+
+  .footer__bottom p {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 10px;
+  }
+</style>

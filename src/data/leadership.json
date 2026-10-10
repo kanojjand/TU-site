@@ -1,0 +1,79 @@
+{
+  "groups": [
+    {
+      "title": "Председатель правления",
+      "people": [
+        {
+          "id": 33,
+          "name": "Аяшев Оналбай Аяшевич",
+          "position": "Председатель правления",
+          "summary": "<p>Научная степень: Доктор педагогических наук, профессор, академик Национальной академии наук Республики Казахстан.</p>",
+          "email": "info@tashenev.edu.kz",
+          "photo": {
+            "src": "/media/person/2385d70b8bd1bd6e-480.webp",
+            "width": 480,
+            "height": 480
+          }
+        }
+      ]
+    },
+    {
+      "title": "Ректор",
+      "people": [
+        {
+          "id": 71,
+          "name": "Рысбекова Жанар Касымбековна",
+          "position": "Ректор",
+          "summary": "<p>Кандидат юридических наук</p>",
+          "email": "rysbek@tashenev.edu.kz",
+          "photo": {
+            "src": "/media/person/973908d0cbed8ae2-480.webp",
+            "width": 480,
+            "height": 320
+          }
+        }
+      ]
+    },
+    {
+      "title": "Проректоры",
+      "people": [
+        {
+          "id": 80,
+          "name": "Серик Даулатулы Мамраймов",
+          "position": "Проректоры",
+          "summary": "<p>Проректор по академическим вопросам</p>",
+          "email": "s-_dauletuly@mail.ru",
+          "photo": {
+            "src": "/media/person/de262e0b157ad1c7-480.webp",
+            "width": 480,
+            "height": 480
+          }
+        },
+        {
+          "id": 81,
+          "name": "Кульджабеков Алибек Бахиджанович",
+          "position": "Проректоры",
+          "summary": "<p>Проректор по науке и стратегическому развитию</p>",
+          "email": "kuljabekov@tashenev.edu.kz",
+          "photo": {
+            "src": "/media/person/46daed4abd59b960-480.webp",
+            "width": 480,
+            "height": 640
+          }
+        },
+        {
+          "id": 82,
+          "name": "Жақабай Нұрай Ерболғанқызы",
+          "position": "Проректоры",
+          "summary": "<p>Проректор по социальным вопросам и молодежной политики</p>",
+          "email": "tashenev.zhastaryy@mail.ru",
+          "photo": {
+            "src": "/media/person/ccff44bdac2c91ed-480.webp",
+            "width": 480,
+            "height": 490
+          }
+        }
+      ]
+    }
+  ]
+}

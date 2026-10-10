@@ -1,0 +1,233 @@
+---
+// News photo gallery. Photos stay on the university server (thousands of them),
+// so only the first few load until the visitor asks for more.
+import Icon from './Icon.astro';
+
+interface Props {
+  images: string[];
+  title: string;
+}
+
+const { images, title } = Astro.props;
+const VISIBLE = 6;
+---
+
+<section class="gallery" aria-labelledby="gallery-title" data-gallery>
+  <h2 id="gallery-title" class="gallery__title">
+    <Icon name="image" size={22} /> Фотографии <span>{images.length}</span>
+  </h2>
+  <ul class="gallery__grid" role="list">
+    {
+      images.map((src, index) => (
+        <li hidden={index >= VISIBLE}>
+          <a href={src} data-index={index} data-gallery-item>
+            <img src={src} alt={`Фото ${index + 1} из ${images.length}: ${title}`} loading="lazy" decoding="async" />
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+  {
+    images.length > VISIBLE && (
+      <button class="btn btn--ghost gallery__more" type="button" data-gallery-more>
+        Показать все фото ({images.length})
+      </button>
+    )
+  }
+
+  <dialog class="lightbox" aria-label="Просмотр фотографии" data-lightbox>
+    <img class="lightbox__img" src="" alt="" data-lightbox-img />
+    <p class="lightbox__counter" data-lightbox-counter></p>
+    <button class="lightbox__btn lightbox__close" type="button" aria-label="Закрыть" data-lightbox-close>
+      <Icon name="close" size={26} />
+    </button>
+    <button class="lightbox__btn lightbox__prev" type="button" aria-label="Предыдущее фото" data-lightbox-prev>
+      <Icon name="chevron-left" size={30} />
+    </button>
+    <button class="lightbox__btn lightbox__next" type="button" aria-label="Следующее фото" data-lightbox-next>
+      <Icon name="chevron-right" size={30} />
+    </button>
+  </dialog>
+</section>
+
+<script>
+  for (const gallery of document.querySelectorAll<HTMLElement>('[data-gallery]')) {
+    const items = [...gallery.querySelectorAll<HTMLAnchorElement>('[data-gallery-item]')];
+    const dialog = gallery.querySelector<HTMLDialogElement>('[data-lightbox]')!;
+    const image = dialog.querySelector<HTMLImageElement>('[data-lightbox-img]')!;
+    const counter = dialog.querySelector<HTMLElement>('[data-lightbox-counter]')!;
+    let current = 0;
+
+    gallery.querySelector('[data-gallery-more]')?.addEventListener('click', (event) => {
+      gallery.querySelectorAll('li[hidden]').forEach((li) => li.removeAttribute('hidden'));
+      (event.currentTarget as HTMLElement).remove();
+    });
+
+    const show = (index: number) => {
+      current = (index + items.length) % items.length;
+      const thumb = items[current].querySelector('img')!;
+      image.src = items[current].href;
+      image.alt = thumb.alt;
+      counter.textContent = `${current + 1} / ${items.length}`;
+    };
+
+    items.forEach((item, index) =>
+      item.addEventListener('click', (event) => {
+        event.preventDefault();
+        show(index);
+        dialog.showModal();
+      }),
+    );
+
+    dialog.querySelector('[data-lightbox-close]')!.addEventListener('click', () => dialog.close());
+    dialog.querySelector('[data-lightbox-prev]')!.addEventListener('click', () => show(current - 1));
+    dialog.querySelector('[data-lightbox-next]')!.addEventListener('click', () => show(current + 1));
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') show(current - 1);
+      if (event.key === 'ArrowRight') show(current + 1);
+    });
+
+    let startX = 0;
+    dialog.addEventListener('touchstart', (event) => (startX = event.touches[0].clientX), { passive: true });
+    dialog.addEventListener('touchend', (event) => {
+      const dx = event.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) show(current + (dx < 0 ? 1 : -1));
+    });
+  }
+</script>
+
+<style>
+  .gallery {
+    margin-top: clamp(40px, 5vw, 64px);
+  }
+
+  .gallery__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: var(--step-2);
+  }
+
+  .gallery__title span {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--muted);
+  }
+
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .gallery__grid a {
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-sm);
+    background: var(--mist);
+  }
+
+  .gallery__grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s var(--ease);
+  }
+
+  .gallery__grid a:hover img {
+    transform: scale(1.05);
+  }
+
+  .gallery__more {
+    margin-top: 20px;
+  }
+
+  .lightbox {
+    width: 100vw;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(10 10 10 / 0.94);
+    color: #fff;
+  }
+
+  .lightbox[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .lightbox::backdrop {
+    background: transparent;
+  }
+
+  .lightbox__img {
+    max-width: min(92vw, 1400px);
+    max-height: 84dvh;
+    width: auto;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  .lightbox__counter {
+    position: absolute;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    font-weight: 700;
+    color: rgb(255 255 255 / 0.8);
+  }
+
+  .lightbox__btn {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.1);
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .lightbox__btn:hover {
+    background: rgb(255 255 255 / 0.22);
+  }
+
+  .lightbox__close {
+    top: 16px;
+    right: 16px;
+  }
+
+  .lightbox__prev {
+    left: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .lightbox__next {
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  @media (max-width: 599px) {
+    .lightbox__prev,
+    .lightbox__next {
+      top: auto;
+      bottom: 8px;
+      transform: none;
+    }
+  }
+</style>

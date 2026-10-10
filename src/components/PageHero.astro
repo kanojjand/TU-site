@@ -1,0 +1,168 @@
+---
+import { url, type Img } from '../lib/content';
+
+export interface Crumb {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  eyebrow?: string;
+  crumbs?: Crumb[];
+  image?: Img | null;
+}
+
+const { title, description, eyebrow, crumbs = [], image } = Astro.props;
+const trail: Crumb[] = [{ label: 'Главная', href: '/' }, ...crumbs];
+const site = Astro.site ?? new URL('http://localhost');
+const breadcrumbLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: trail.map((crumb, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: crumb.label,
+    ...(crumb.href ? { item: new URL(url(crumb.href), site).href } : {}),
+  })),
+};
+---
+
+<section class:list={['page-hero', { 'has-image': image }]}>
+  <img class="page-hero__mark" src={url('/brand/mark.svg')} alt="" aria-hidden="true" width="400" height="500" />
+  <div class="container page-hero__inner">
+    <div class="page-hero__text">
+      <nav aria-label="Хлебные крошки">
+        <ol class="crumbs" role="list">
+          {
+            trail.map((crumb, index) => (
+              <li>
+                {crumb.href && index < trail.length - 1 ? (
+                  <a href={url(crumb.href)}>{crumb.label}</a>
+                ) : (
+                  <span aria-current={index === trail.length - 1 ? 'page' : undefined}>{crumb.label}</span>
+                )}
+              </li>
+            ))
+          }
+        </ol>
+      </nav>
+      {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+      <h1>{title}</h1>
+      {description && <p class="lead page-hero__lead">{description}</p>}
+      <slot />
+    </div>
+    {
+      image && (
+        <div class="page-hero__media">
+          <img
+            src={url(image.src)}
+            width={image.width ?? undefined}
+            height={image.height ?? undefined}
+            alt=""
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      )
+    }
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)} />
+</section>
+
+<style>
+  .page-hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--mist);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .page-hero__mark {
+    position: absolute;
+    right: -90px;
+    top: -140px;
+    width: 420px;
+    height: auto;
+    opacity: 0.07;
+    pointer-events: none;
+  }
+
+  @media (max-width: 639px) {
+    .page-hero__mark {
+      display: none;
+    }
+  }
+
+  .page-hero__inner {
+    position: relative;
+    display: grid;
+    gap: 28px;
+    align-items: center;
+    padding-block: clamp(28px, 4vw, 48px) clamp(36px, 5vw, 64px);
+  }
+
+  @media (min-width: 900px) {
+    .has-image .page-hero__inner {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      gap: 56px;
+    }
+  }
+
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+    margin: 0 0 22px;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .crumbs li:not(:last-child)::after {
+    content: '/';
+    margin-inline: 10px;
+    color: var(--line-2);
+  }
+
+  .crumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .crumbs a:hover {
+    color: var(--red-600);
+    text-decoration: underline;
+  }
+
+  .crumbs [aria-current='page'] {
+    color: var(--ink-2);
+  }
+
+  h1 {
+    font-size: var(--step-4);
+    max-width: 22ch;
+  }
+
+  .page-hero__lead {
+    max-width: 58ch;
+    margin-top: 18px;
+  }
+
+  .page-hero__media img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  @media (max-width: 899px) {
+    .page-hero__media img {
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius);
+    }
+  }
+</style>

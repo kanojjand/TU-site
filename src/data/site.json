@@ -1,0 +1,365 @@
+{
+  "menu": [
+    {
+      "title": "Об университете",
+      "href": null,
+      "items": [
+        {
+          "title": "История университета",
+          "href": "/about/"
+        },
+        {
+          "title": "Наше руководство",
+          "href": "/leadership/"
+        },
+        {
+          "title": "Медиатека",
+          "href": "/news/"
+        },
+        {
+          "title": "Структура университета",
+          "href": "/structure/"
+        },
+        {
+          "title": "Миссия университета",
+          "href": "/mission/"
+        },
+        {
+          "title": "Учёный совет",
+          "href": "/academic-council/"
+        },
+        {
+          "title": "Блог ректора",
+          "href": "/open-rektor/"
+        },
+        {
+          "title": "Соискание ученого звания Профессора",
+          "href": "/announcements/"
+        },
+        {
+          "title": "Аккредитация",
+          "href": "/accreditation/"
+        },
+        {
+          "title": "Академическая политика",
+          "href": "/academic-policy/"
+        },
+        {
+          "title": "Программа развития",
+          "href": "/development-strategy/"
+        },
+        {
+          "title": "Политика качества",
+          "href": "/quality-policy/"
+        },
+        {
+          "title": "Базы практики",
+          "href": "/practice-bases/"
+        },
+        {
+          "title": "Brand book",
+          "href": "/brand-book/"
+        },
+        {
+          "title": "ECO-CAMPUS",
+          "href": "/eco-campus/"
+        },
+        {
+          "title": "Устойчивое развитие университета",
+          "href": "/sustainable-development/"
+        },
+        {
+          "title": "Качество образования",
+          "href": "/quality-edu/"
+        },
+        {
+          "title": "Устав университета",
+          "href": "https://tashenev.edu.kz/docs/Academ/ustav.pdf"
+        },
+        {
+          "title": "Правила университета о конкурсном замещении должностей ППС и научных работников",
+          "href": "https://tashenev.edu.kz/docs/Academ/konkurs.pdf"
+        }
+      ]
+    },
+    {
+      "title": "Абитуриент 2026",
+      "href": null,
+      "items": [
+        {
+          "title": "Информация для абитуриентов",
+          "href": "/enrolle/"
+        },
+        {
+          "title": "Информация для первокурсников",
+          "href": "/freshman/"
+        },
+        {
+          "title": "Карта корпусов",
+          "href": "/building-map/"
+        },
+        {
+          "title": "Тәшенев тартуы",
+          "href": "https://tashenev.edu.kz/ru/media/item/227"
+        },
+        {
+          "title": "Foundation",
+          "href": "https://tashenev.edu.kz/kz/foundation"
+        }
+      ]
+    },
+    {
+      "title": "Факультеты",
+      "href": "/faculties/",
+      "items": []
+    },
+    {
+      "title": "Студенту",
+      "href": null,
+      "items": [
+        {
+          "title": "Информация для студентов",
+          "href": "/for-student/"
+        },
+        {
+          "title": "Путеводитель студента",
+          "href": "https://tashenev.edu.kz/docs/Academ/anyktama.pdf"
+        },
+        {
+          "title": "Студенческий дом",
+          "href": "/student-house/"
+        },
+        {
+          "title": "Трудоустройство",
+          "href": "/employment/"
+        },
+        {
+          "title": "Онлайн регистрация",
+          "href": "/online-registation/"
+        },
+        {
+          "title": "Сервисы для ППС",
+          "href": "https://www.bagdarlama.pro/"
+        },
+        {
+          "title": "Библиотека",
+          "href": "https://library.tashenev.edu.kz/"
+        },
+        {
+          "title": "Brand shop",
+          "href": "/brand-shop/"
+        },
+        {
+          "title": "Спорт",
+          "href": "/sport/"
+        }
+      ]
+    },
+    {
+      "title": "Отделы",
+      "href": null,
+      "items": [
+        {
+          "title": "Департамент по академическим вопросам",
+          "href": "/academ/"
+        },
+        {
+          "title": "Отдел планирования и организации учебного процесса",
+          "href": "/plan-edu/"
+        },
+        {
+          "title": "Отдел методического обеспечения образовательных программ",
+          "href": "/educational-methodical-management/"
+        },
+        {
+          "title": "Центр регистрации и поддержки обучающихся",
+          "href": "/oficce-registration/"
+        },
+        {
+          "title": "Центр аккредитации и лицензирования",
+          "href": "/accreditation-licensing/"
+        },
+        {
+          "title": "Центр искусственного интеллекта",
+          "href": "/artificial-intelligence/"
+        },
+        {
+          "title": "Центр цифрового развития",
+          "href": "/information-technologies/"
+        },
+        {
+          "title": "Центр коммерциализации и сопровождения проектов",
+          "href": "/science-and-commercialization/"
+        },
+        {
+          "title": "Система менеджмента качества",
+          "href": "/quality-management/"
+        },
+        {
+          "title": "Центр молодежной политики",
+          "href": "/zhastar/"
+        },
+        {
+          "title": "Департамент науки и инноваций",
+          "href": "/science-innovation/"
+        },
+        {
+          "title": "Департамент HR",
+          "href": "/hr/"
+        },
+        {
+          "title": "Юридическая служба",
+          "href": "/lawyer/"
+        },
+        {
+          "title": "Управление финансов",
+          "href": "/finance/"
+        },
+        {
+          "title": "Департамент неформального образования",
+          "href": "/nonformal-education/"
+        },
+        {
+          "title": "Центр послевузовского образования",
+          "href": "/postgraduate-education/"
+        },
+        {
+          "title": "Информационно-образовательный центр",
+          "href": "/libary/"
+        },
+        {
+          "title": "Центр академической мобильности",
+          "href": "/academic-mobility/"
+        },
+        {
+          "title": "Студенческая поликлиника",
+          "href": "/medical-service/"
+        },
+        {
+          "title": "Центр карьеры и трудоустройства",
+          "href": "/career-and-employment-center/"
+        },
+        {
+          "title": "Архив",
+          "href": "/archive/"
+        },
+        {
+          "title": "Департамент международных связей",
+          "href": "/international-relations/"
+        },
+        {
+          "title": "Центр фаундейшн и языковой подготовки",
+          "href": "/foundation-center/"
+        }
+      ]
+    },
+    {
+      "title": "Образовательный портал",
+      "href": "/portal/",
+      "items": []
+    },
+    {
+      "title": "e-University",
+      "href": null,
+      "items": [
+        {
+          "title": "Документооборот SalemOffice",
+          "href": "https://salemoffice.kz/sign-in"
+        },
+        {
+          "title": "Platonus",
+          "href": "https://platonus.tashenev.kz/v7/#/pps-main/index"
+        },
+        {
+          "title": "Онлайн регистрация",
+          "href": "https://tashenev.edu.kz/kz/online-registation"
+        },
+        {
+          "title": "Корпоративная почта",
+          "href": "https://webmail.tashenev.edu.kz/"
+        },
+        {
+          "title": "Научная библиотека",
+          "href": "https://lib.tashenev.edu.kz/"
+        },
+        {
+          "title": "Антиплагиат.ВУЗ",
+          "href": "https://sirdariya.n06.antiplagiat.com/"
+        },
+        {
+          "title": "Сервис для студентов",
+          "href": "https://www.anyqtama.online/"
+        },
+        {
+          "title": "Сервис для преподавателей",
+          "href": "https://www.bagdarlama.pro/"
+        },
+        {
+          "title": "Онлайн приемная комиссия",
+          "href": "https://talapker.tashenev.edu.kz/kz"
+        },
+        {
+          "title": "Специализированный тест",
+          "href": "http://91.229.151.118:7070/"
+        }
+      ]
+    }
+  ],
+  "socials": [
+    {
+      "title": "Facebook",
+      "href": "https://www.facebook.com/tashenovu?locale=ru_RU"
+    },
+    {
+      "title": "Instagram",
+      "href": "https://www.instagram.com/tashenev.university/"
+    },
+    {
+      "title": "Youtube",
+      "href": "https://www.youtube.com/channel/UCY7kWZzXvKiJSX3zDyfBZoQ"
+    }
+  ],
+  "contacts": {
+    "address": "160012, г.Шымкент, проспект Кунаева, 21",
+    "phone": "+7 (776) 104-70-70",
+    "email": "info@tashenev.edu.kz"
+  },
+  "categories": [
+    {
+      "id": 1,
+      "slug": "novosti",
+      "name": "Новости"
+    },
+    {
+      "id": 2,
+      "slug": "obyavleniya",
+      "name": "Объявления"
+    },
+    {
+      "id": 3,
+      "slug": "pozdravleniya",
+      "name": "Поздравления"
+    },
+    {
+      "id": 4,
+      "slug": "fotogalereya",
+      "name": "Фотогалерея"
+    },
+    {
+      "id": 5,
+      "slug": "videoteka",
+      "name": "Видеотека"
+    },
+    {
+      "id": 6,
+      "slug": "smi-o-nas",
+      "name": "СМИ о нас"
+    },
+    {
+      "id": 7,
+      "slug": "scopus",
+      "name": "Статьи Scopus"
+    }
+  ],
+  "source": "https://tashenev.edu.kz/ru"
+}

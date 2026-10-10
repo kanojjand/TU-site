@@ -1,0 +1,84 @@
+---
+// Full-text search over every page and news item, powered by Pagefind.
+// The index is generated after `astro build` (see the "build" script).
+import PageHero from '../components/PageHero.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { url } from '../lib/content';
+
+const base = import.meta.env.BASE_URL;
+---
+
+<BaseLayout title="Поиск по сайту" description="Поиск по страницам и новостям Университета имени Ж. А. Ташенева." searchable={false}>
+  <link rel="stylesheet" href={url('/pagefind/pagefind-ui.css')} />
+  <PageHero title="Поиск по сайту" crumbs={[{ label: 'Поиск' }]} />
+  <div class="container search">
+    <div id="search" data-base={base}></div>
+    <p class="search__fallback" hidden data-search-fallback>
+      Поиск работает в собранной версии сайта: выполните <code>npm run build</code> и <code>npm run preview</code>.
+    </p>
+  </div>
+  <script is:inline src={url('/pagefind/pagefind-ui.js')}></script>
+  <script is:inline>
+    (function () {
+      var root = document.getElementById('search');
+      if (typeof PagefindUI === 'undefined') {
+        document.querySelector('[data-search-fallback]').hidden = false;
+        return;
+      }
+      var ui = new PagefindUI({
+        element: '#search',
+        baseUrl: root.dataset.base,
+        showSubResults: true,
+        showImages: false,
+        resetStyles: false,
+        autofocus: true,
+      });
+      var query = new URLSearchParams(location.search).get('q');
+      if (query) ui.triggerSearch(query);
+    })();
+  </script>
+</BaseLayout>
+
+<style>
+  .search {
+    max-width: 880px;
+    padding-block: 40px clamp(56px, 7vw, 96px);
+    min-height: 40vh;
+  }
+
+  .search__fallback {
+    padding: 20px;
+    border-radius: var(--radius);
+    background: var(--mist);
+    color: var(--muted);
+  }
+
+  .search :global(.pagefind-ui) {
+    --pagefind-ui-scale: 1;
+    --pagefind-ui-primary: var(--red);
+    --pagefind-ui-text: var(--ink);
+    --pagefind-ui-background: var(--paper);
+    --pagefind-ui-border: var(--line-2);
+    --pagefind-ui-tag: var(--mist);
+    --pagefind-ui-border-width: 1px;
+    --pagefind-ui-border-radius: 14px;
+    --pagefind-ui-font: var(--font);
+  }
+
+  .search :global(.pagefind-ui__search-input) {
+    font-weight: 400;
+  }
+
+  .search :global(.pagefind-ui__result-link) {
+    color: var(--ink);
+  }
+
+  .search :global(.pagefind-ui__result-link:hover) {
+    color: var(--red-600);
+  }
+
+  .search :global(mark) {
+    background: var(--red-50);
+    color: var(--red-700);
+  }
+</style>

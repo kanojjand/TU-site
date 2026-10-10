@@ -1,0 +1,12 @@
+{
+  "slug": "student-works",
+  "title": "Лучшие студенческие работы",
+  "description": "",
+  "hero": {
+    "src": "/media/hero/4c493b44d9f7992f-1600.webp",
+    "width": 1280,
+    "height": 437
+  },
+  "html": "<p> 📄 </p>  <h5>ИИ в образовании</h5><p>PDF • 1.2MB Скачать</p>         <p> 📄 </p>  <h5>Базы данных</h5><p>DOCX • 860KB Скачать</p>         <p> 📄 </p>  <h5>Отчёт по практике</h5><p>PDF • 1.7MB Скачать</p>",
+  "source": "https://tashenev.edu.kz/ru/student-works"
+}

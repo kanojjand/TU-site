@@ -1,7 +1,6 @@
 // Typed access to the JSON produced by `npm run scrape` (scripts/scrape.mjs).
-import homeData from '../data/home.json';
-import leadershipData from '../data/leadership.json';
-import siteData from '../data/site.json';
+// Each language has its own folder, src/data/<lang>/; images are shared.
+import { LANGS, LOCALE, PREFIX, localize, stripLang, type Lang } from '../i18n';
 
 export interface Img {
   src: string;
@@ -93,40 +92,104 @@ export interface Category {
   name: string;
 }
 
-const values = <T>(modules: Record<string, T>): T[] => Object.values(modules);
+export interface Home {
+  slides: { title: string; text: string; image: Img | null }[];
+  stats: { value: string; label: string }[];
+  steps: { number: string; title: string; text: string; links: { title: string; href: string }[] }[];
+  rector: { title: string; text: string; name: string; photo: Img | null; href: string | null }[];
+  links: { title: string; href: string }[];
+}
 
-export const pages = values(import.meta.glob<Page>('../data/pages/*.json', { eager: true, import: 'default' }));
-export const news = values(import.meta.glob<NewsItem>('../data/news/*.json', { eager: true, import: 'default' })).sort(
-  (a, b) => b.id - a.id,
+export interface Site {
+  menu: { title: string; href: string | null; items: { title: string; href: string }[] }[];
+  socials: { title: string; href: string }[];
+  contacts: { address: string | null; phone: string | null; email: string | null };
+  categories: Category[];
+  /** This language's root on the old site. */
+  source: string;
+}
+
+type Modules<T> = Record<string, T>;
+
+/** "../data/kz/pages/about.json" -> "kz" */
+const langOf = (file: string) => file.split('/')[2] as Lang;
+
+function byLang<T>(modules: Modules<T>): Record<Lang, T[]> {
+  const out = Object.fromEntries(LANGS.map((lang) => [lang, [] as T[]])) as Record<Lang, T[]>;
+  for (const [file, value] of Object.entries(modules)) out[langOf(file)]?.push(value);
+  return out;
+}
+
+// Vite reads the glob options statically, so each call spells them out.
+const allPages = byLang(import.meta.glob<Page>('../data/*/pages/*.json', { eager: true, import: 'default' }));
+const allNews = byLang(import.meta.glob<NewsItem>('../data/*/news/*.json', { eager: true, import: 'default' }));
+const allFaculties = byLang(import.meta.glob<Faculty>('../data/*/faculties/*.json', { eager: true, import: 'default' }));
+const allDepartments = byLang(import.meta.glob<Department>('../data/*/departments/*.json', { eager: true, import: 'default' }));
+const allPeople = byLang(import.meta.glob<Person>('../data/*/people/*.json', { eager: true, import: 'default' }));
+const allHome = byLang(import.meta.glob<Home>('../data/*/home.json', { eager: true, import: 'default' }));
+const allSite = byLang(import.meta.glob<Site>('../data/*/site.json', { eager: true, import: 'default' }));
+const allLeadership = byLang(
+  import.meta.glob<{ groups: { title: string; people: Leader[] }[] }>('../data/*/leadership.json', { eager: true, import: 'default' }),
 );
-export const faculties = values(
-  import.meta.glob<Faculty>('../data/faculties/*.json', { eager: true, import: 'default' }),
-).sort((a, b) => a.id - b.id);
-export const departments = values(
-  import.meta.glob<Department>('../data/departments/*.json', { eager: true, import: 'default' }),
-).sort((a, b) => a.name.localeCompare(b.name, 'ru'));
-export const people = values(import.meta.glob<Person>('../data/people/*.json', { eager: true, import: 'default' }));
 
-export const home = homeData;
-export const site = siteData;
-export const leadership = leadershipData as { groups: { title: string; people: Leader[] }[] };
-export const categories: Category[] = siteData.categories;
+/** Languages that have been migrated; a language without src/data/<lang>/site.json is not built. */
+export const availableLangs: Lang[] = LANGS.filter((lang) => allSite[lang].length > 0);
 
-export const pageBySlug = new Map(pages.map((page) => [page.slug, page]));
-export const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
-export const facultyById = new Map(faculties.map((faculty) => [faculty.id, faculty]));
+function load(lang: Lang) {
+  const site = allSite[lang][0];
+  const pages = allPages[lang];
+  const news = [...allNews[lang]].sort((a, b) => b.id - a.id);
+  const faculties = [...allFaculties[lang]].sort((a, b) => a.id - b.id);
+  const departments = [...allDepartments[lang]].sort((a, b) => a.name.localeCompare(b.name, LOCALE[lang]));
+  const people = allPeople[lang];
+  const categories = site.categories;
+  const prefix = PREFIX[lang];
 
-/** Every path the site generates; used to hide menu entries whose page could not be migrated. */
-const routes = new Set<string>(['/', '/news/', '/faculties/', '/departments/', '/leadership/', '/search/', '/sitemap/']);
-for (const page of pages) routes.add(`/${page.slug}/`);
-for (const item of news) routes.add(`/news/${item.id}/`);
-for (const faculty of faculties) routes.add(`/faculties/${faculty.id}/`);
-for (const department of departments) routes.add(`/departments/${department.id}/`);
-for (const person of people) routes.add(`/leadership/${person.id}/`);
-for (const category of categories) routes.add(`/news/category/${category.slug}/`);
+  /** Every path this language generates; used to hide menu entries whose page could not be migrated. */
+  const routes = new Set<string>(
+    ['/', '/news/', '/faculties/', '/departments/', '/leadership/', '/search/', '/sitemap/'].map((route) => prefix + route),
+  );
+  for (const page of pages) routes.add(`${prefix}/${page.slug}/`);
+  for (const item of news) routes.add(`${prefix}/news/${item.id}/`);
+  for (const faculty of faculties) routes.add(`${prefix}/faculties/${faculty.id}/`);
+  for (const department of departments) routes.add(`${prefix}/departments/${department.id}/`);
+  for (const person of people) routes.add(`${prefix}/leadership/${person.id}/`);
+  for (const category of categories) routes.add(`${prefix}/news/category/${category.slug}/`);
+
+  const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
+
+  return {
+    lang,
+    site,
+    home: allHome[lang][0],
+    leadership: allLeadership[lang][0] ?? { groups: [] },
+    pages,
+    news,
+    faculties,
+    departments,
+    people,
+    categories,
+    pageBySlug: new Map(pages.map((page) => [page.slug, page])),
+    categoryBySlug,
+    facultyById: new Map(faculties.map((faculty) => [faculty.id, faculty])),
+    /** True for external links and for internal paths this language has a page for. */
+    hasRoute: (href: string) => !isInternal(href) || routes.has(href),
+    categoryName: (slug: string) => categoryBySlug.get(slug)?.name ?? categories[0]?.name ?? slug,
+    /** This language's root on the old site, e.g. https://tashenev.edu.kz/kz */
+    originalSite: site.source,
+  };
+}
+
+export type Content = ReturnType<typeof load>;
+const cache = new Map<Lang, Content>();
+
+/** Everything migrated for one language. */
+export function getContent(lang: Lang): Content {
+  if (!cache.has(lang)) cache.set(lang, load(lang));
+  return cache.get(lang)!;
+}
 
 export const isInternal = (href: string) => href.startsWith('/') && !href.startsWith('//');
-export const hasRoute = (href: string) => !isInternal(href) || routes.has(href);
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -135,33 +198,27 @@ export function url(path: string): string {
   return isInternal(path) ? `${BASE}${path}` : path;
 }
 
+/** The opposite of url(): a request path without the deploy base. */
+export function sitePath(pathname: string): string {
+  return (BASE && pathname.startsWith(BASE) ? pathname.slice(BASE.length) : pathname) || '/';
+}
+
+/**
+ * The same page in every migrated language: its path there when it exists,
+ * otherwise that language's home page (for the language switcher and hreflang).
+ */
+export function languageLinks(path: string) {
+  const neutral = stripLang(path);
+  return availableLangs.map((lang) => {
+    const target = localize(neutral, lang);
+    const exists = getContent(lang).hasRoute(target);
+    return { lang, path: exists ? target : localize('/', lang), exists };
+  });
+}
+
 /** Same as url() for every href/src inside migrated HTML. */
 export function withBase(html: string): string {
   return BASE ? html.replace(/(href|src)="\/(?!\/)/g, `$1="${BASE}/`) : html;
-}
-
-const MONTHS = [
-  'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
-  'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
-];
-
-/** "2026-10-09" -> "9 октября 2026" */
-export function formatDate(iso: string | null): string {
-  if (!iso) return '';
-  const [year, month, day] = iso.split('-').map(Number);
-  return `${day} ${MONTHS[month - 1]} ${year}`;
-}
-
-/** Russian plural: plural(3, ['кафедра', 'кафедры', 'кафедр']) -> "3 кафедры" */
-export function plural(n: number, [one, few, many]: [string, string, string]): string {
-  const mod10 = n % 10;
-  const mod100 = n % 100;
-  const word = mod10 === 1 && mod100 !== 11 ? one : mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14) ? few : many;
-  return `${n} ${word}`;
-}
-
-export function categoryName(slug: string): string {
-  return categoryBySlug.get(slug)?.name ?? 'Новости';
 }
 
 /** Short plain-text description for meta tags. */
@@ -169,5 +226,3 @@ export function summarize(html: string, max = 160): string {
   const text = html.replace(/<[^>]+>/g, ' ').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim();
   return text.length > max ? `${text.slice(0, max - 1).replace(/\s+\S*$/, '')}…` : text;
 }
-
-export const ORIGINAL_SITE = siteData.source;

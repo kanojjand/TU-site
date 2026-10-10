@@ -1,0 +1,133 @@
+---
+import Icon from '../../../components/Icon.astro';
+import PageHero, { type Crumb } from '../../../components/PageHero.astro';
+import PersonCard from '../../../components/PersonCard.astro';
+import SourceNote from '../../../components/SourceNote.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { langParam, localize, useTranslations, type Lang } from '../../../i18n';
+import { availableLangs, getContent, summarize, url, withBase, type Department } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.flatMap((lang) =>
+    getContent(lang).departments.map((department) => ({
+      params: { lang: langParam(lang), id: String(department.id) },
+      props: { lang, department },
+    })),
+  );
+}
+
+const { lang, department } = Astro.props as { lang: Lang; department: Department };
+const { t } = useTranslations(lang);
+const { departments, facultyById } = getContent(lang);
+const faculty = department.facultyId !== null ? facultyById.get(department.facultyId) : undefined;
+const siblings = faculty ? departments.filter((d) => d.facultyId === faculty.id && d.id !== department.id) : [];
+const crumbs: Crumb[] = [
+  ...(faculty
+    ? [{ label: faculty.name, href: `/faculties/${faculty.id}/` }]
+    : [{ label: t('departments.title'), href: '/departments/' }]),
+  { label: department.name },
+];
+const video = department.video?.replace(/^http:/, 'https:');
+---
+
+<BaseLayout title={department.title || department.name} description={summarize(department.html)} image={department.hero?.src}>
+  <PageHero
+    title={department.title || department.name}
+    eyebrow={faculty ? faculty.name : t('departments.one')}
+    image={department.hero}
+    crumbs={crumbs}
+  />
+  <div class="container page-body has-aside">
+    <article>
+      {department.html && <div class="prose" set:html={withBase(department.html)} />}
+      {
+        video && (
+          <div class="prose video">
+            <div class="embed">
+              <iframe src={video} title={t('departments.video', { name: department.name })} loading="lazy" allowfullscreen />
+            </div>
+          </div>
+        )
+      }
+      <SourceNote href={department.source} />
+    </article>
+    <aside class="aside">
+      {
+        department.head && (
+          <PersonCard
+            name={department.head.name}
+            role={department.head.role || t('departments.head')}
+            photo={department.head.photo}
+            summary={department.head.bio}
+            contacts={department.head.contacts}
+          />
+        )
+      }
+      {
+        siblings.length > 0 && (
+          <nav class="siblings" aria-label={t('departments.siblingsLabel')}>
+            <p>{t('departments.siblings')}</p>
+            <ul role="list">
+              {siblings.map((sibling) => (
+                <li>
+                  <a href={url(localize(`/departments/${sibling.id}/`, lang))}>
+                    {sibling.name} <Icon name="arrow-right" size={16} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .video {
+    margin-top: 40px;
+  }
+
+  .aside {
+    display: grid;
+    gap: 20px;
+  }
+
+  .siblings {
+    padding: 22px 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+  }
+
+  .siblings p {
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+
+  .siblings ul {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .siblings a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 0;
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .siblings a:hover {
+    color: var(--accent-strong);
+  }
+
+  .siblings :global(.icon) {
+    flex: none;
+    color: var(--accent);
+  }
+</style>

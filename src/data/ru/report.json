@@ -1,0 +1,122 @@
+{
+  "generatedAt": "2026-10-10T17:38:42.763Z",
+  "counts": {
+    "pages": 91,
+    "news": 1272,
+    "faculties": 8,
+    "departments": 15,
+    "people": 5,
+    "missing": 8,
+    "redirected": 0,
+    "deadLinks": 49,
+    "imageFailures": 16
+  },
+  "missing": [
+    {
+      "url": "https://tashenev.edu.kz/ru/leadership-in/36",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/leadership-in/34",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/department/27",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/leadership-in/39",
+      "status": 0,
+      "error": "HTTP 500"
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/N",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/htthu",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/httpig6",
+      "status": 404
+    },
+    {
+      "url": "https://tashenev.edu.kz/ru/hQw",
+      "status": 404
+    }
+  ],
+  "redirected": [],
+  "deadLinks": [
+    "/departments/27/",
+    "/hqw/",
+    "/htthu/",
+    "/httpig6/",
+    "/kz/announcements-turyskulov/",
+    "/kz/beine-1/",
+    "/kz/beine-2/",
+    "/kz/foundation/",
+    "/kz/leadership/33/",
+    "/kz/news-fizculture/",
+    "/kz/news-kaz/",
+    "/kz/news-tarih/",
+    "/kz/news/1021/",
+    "/kz/news/545/",
+    "/kz/news/548/",
+    "/kz/news/563/",
+    "/kz/news/567/",
+    "/kz/news/592/",
+    "/kz/news/596/",
+    "/kz/news/597/",
+    "/kz/news/630/",
+    "/kz/news/637/",
+    "/kz/news/638/",
+    "/kz/news/645/",
+    "/kz/news/704/",
+    "/kz/news/705/",
+    "/kz/news/732/",
+    "/kz/news/781/",
+    "/kz/news/783/",
+    "/kz/news/785/",
+    "/kz/news/786/",
+    "/kz/news/794/",
+    "/kz/news/847/",
+    "/kz/news/864/",
+    "/kz/news/891/",
+    "/kz/news/904/",
+    "/kz/news/905/",
+    "/kz/news/912/",
+    "/kz/news/921/",
+    "/kz/news/931/",
+    "/kz/news/963/",
+    "/kz/news/972/",
+    "/kz/news/973/",
+    "/kz/news/976/",
+    "/kz/news/992/",
+    "/kz/online-registation/",
+    "/kz/tulek-pikir/",
+    "/kz/video-lecture/",
+    "/n/"
+  ],
+  "imageFailures": [
+    "https://tashenev.edu.kz/images/.jpg",
+    "https://tashenev.edu.kz/assets/img/8.jpg",
+    "https://tashenev.edu.kz/assets/img/Saduak.jpg",
+    "https://tashenev.edu.kz/docs/Academ/Bazarkul.jpeg",
+    "https://tashenev.edu.kz/img/oxford.jpg",
+    "https://tashenev.edu.kz/assets/img/library-2.png",
+    "https://tashenev.edu.kz/assets/img/library-3.png",
+    "https://tashenev.edu.kz/sites/default/files/styles/medium/public/2024-11/Jakybai-y.jpg?itok=YqSkjoD0",
+    "https://tashenev.edu.kz/sites/default/files/styles/medium/public/2024-11/Nazarbaeva-d.jpg?itok=ALWPGWtJ",
+    "https://tashenev.edu.kz/sites/default/files/styles/medium/public/2024-11/Nugmanova-g.jpg?itok=LahLgb7o",
+    "https://tashenev.edu.kz/assets/img/Saduas.jpg",
+    "https://tashenev.edu.kz/ru/department/%D0%A1%D0%A1%D0%AB%D0%9B%D0%9A%D0%90_%D0%9D%D0%90_%D0%A4%D0%9E%D0%A2%D0%9A%D0%A3_6.jpg",
+    "file:///C:/Users/SU/AppData/Local/Temp/msohtmlclip1/01/clip_image002.jpg",
+    "http://hamilion.conversion.kz/storage/news/September2021/2021-09-16-speed-.jpg",
+    "http://hamilion.conversion.kz/storage/news/September2021/2021-09-16-speed-4.jpg",
+    "http://hamilion.conversion.kz/storage/news/September2021/2021-09-16-speed-3.jpg"
+  ]
+}

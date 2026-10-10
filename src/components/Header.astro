@@ -1,9 +1,16 @@
 ---
-import { isExternal, navigation, services } from '../config/navigation';
-import { site, url } from '../lib/content';
+import { getNavigation, isExternal } from '../config/navigation';
+import { langFromPath, localize, useTranslations } from '../i18n';
+import { getContent, url } from '../lib/content';
 import Icon from './Icon.astro';
+import LangSwitch from './LangSwitch.astro';
 
 const path = Astro.url.pathname;
+const lang = langFromPath(path);
+const { t } = useTranslations(lang);
+const { navigation, services } = getNavigation(lang);
+const { site } = getContent(lang);
+const home = url(localize('/', lang));
 const { phone, email } = site.contacts;
 const tel = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null;
 const linkAttrs = (href: string) => (isExternal(href) ? { target: '_blank', rel: 'noopener' } : {});
@@ -20,24 +27,44 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
       {email && <a href={`mailto:${email}`}><Icon name="mail" size={16} />{email}</a>}
     </div>
     <div class="topbar__end">
-      <nav class="topbar__links" aria-label="Сервисы">
+      <nav class="topbar__links" aria-label={t('header.services')}>
         {services.slice(0, 4).map((service) => <a href={service.href} {...linkAttrs(service.href)}>{service.label}</a>)}
-        <a href={url('/contacts/')}>Контакты</a>
+        <a href={url(localize('/contacts/', lang))}>{t('common.contacts')}</a>
       </nav>
-      <button class="topbar__vision" type="button" data-vision-toggle>
-        <Icon name="eye" size={16} /><span data-vision-label>Версия для слабовидящих</span>
+      <button
+        class="topbar__vision"
+        type="button"
+        data-vision-toggle
+        data-label-on={t('vision.on')}
+        data-label-off={t('vision.off')}
+      >
+        <Icon name="eye" size={16} /><span data-vision-label>{t('vision.on')}</span>
       </button>
+      <button
+        class="topbar__theme"
+        type="button"
+        data-theme-toggle
+        data-label-dark={t('theme.toDark')}
+        data-label-light={t('theme.toLight')}
+        aria-label={t('theme.toDark')}
+        title={t('theme.toDark')}
+      >
+        <Icon name="moon" size={16} class="theme-icon theme-icon--moon" />
+        <Icon name="sun" size={16} class="theme-icon theme-icon--sun" />
+      </button>
+      <LangSwitch tone="bar" />
     </div>
   </div>
 </div>
 
 <header class="header" data-header>
   <div class="container header__row">
-    <a class="header__logo" href={url('/')}>
-      <img src={url('/brand/logo.svg')} alt="Tashenev University — на главную" width="187" height="60" />
+    <a class="header__logo" href={home}>
+      <img class="logo-light" src={url('/brand/logo.svg')} alt={t('site.home')} width="187" height="60" />
+      <img class="logo-dark" src={url('/brand/logo-white.svg')} alt={t('site.home')} width="187" height="60" />
     </a>
 
-    <nav class="nav" aria-label="Основное меню">
+    <nav class="nav" aria-label={t('header.mainMenu')}>
       <ul class="nav__list" role="list">
         {
           navigation.map((section) => (
@@ -110,14 +137,19 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     </nav>
 
     <div class="header__actions">
-      <a class="icon-btn" href={url('/search/')} aria-label="Поиск по сайту"><Icon name="search" size={22} /></a>
-      <a class="btn btn--primary btn--sm header__cta" href={url('/enrolle/')}>Поступить</a>
+      <div class="header__compact">
+        <LangSwitch />
+      </div>
+      <a class="icon-btn header__search" href={url(localize('/search/', lang))} aria-label={t('search.label')}>
+        <Icon name="search" size={22} />
+      </a>
+      <a class="btn btn--primary btn--sm header__cta" href={url(localize('/enrolle/', lang))}>{t('header.apply')}</a>
       <button
         class="icon-btn header__burger"
         type="button"
         aria-expanded="false"
         aria-controls="drawer"
-        aria-label="Открыть меню"
+        aria-label={t('header.openMenu')}
         data-drawer-open
       >
         <Icon name="menu" size={24} />
@@ -126,22 +158,38 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
   </div>
 </header>
 
-<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label="Меню сайта" hidden data-drawer>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-label={t('header.siteMenu')} hidden data-drawer>
   <div class="drawer__head">
-    <a class="header__logo" href={url('/')}>
-      <img src={url('/brand/logo.svg')} alt="Tashenev University — на главную" width="156" height="50" />
+    <a class="header__logo" href={home}>
+      <img class="logo-light" src={url('/brand/logo.svg')} alt={t('site.home')} width="156" height="50" />
+      <img class="logo-dark" src={url('/brand/logo-white.svg')} alt={t('site.home')} width="156" height="50" />
     </a>
-    <button class="icon-btn" type="button" aria-label="Закрыть меню" data-drawer-close>
+    <button class="icon-btn" type="button" aria-label={t('header.closeMenu')} data-drawer-close>
       <Icon name="close" size={24} />
     </button>
   </div>
   <div class="drawer__body">
-    <form class="drawer__search" action={url('/search/')} method="get" role="search">
-      <label class="visually-hidden" for="drawer-q">Поиск по сайту</label>
-      <input id="drawer-q" name="q" type="search" placeholder="Поиск по сайту" autocomplete="off" />
-      <button type="submit" aria-label="Найти"><Icon name="search" size={20} /></button>
+    <form class="drawer__search" action={url(localize('/search/', lang))} method="get" role="search">
+      <label class="visually-hidden" for="drawer-q">{t('search.label')}</label>
+      <input id="drawer-q" name="q" type="search" placeholder={t('search.label')} autocomplete="off" />
+      <button type="submit" aria-label={t('search.submit')}><Icon name="search" size={20} /></button>
     </form>
-    <nav aria-label="Меню">
+    <div class="drawer__prefs">
+      <LangSwitch />
+      <button
+        class="icon-btn"
+        type="button"
+        data-theme-toggle
+        data-label-dark={t('theme.toDark')}
+        data-label-light={t('theme.toLight')}
+        aria-label={t('theme.toDark')}
+        title={t('theme.toDark')}
+      >
+        <Icon name="moon" size={22} class="theme-icon theme-icon--moon" />
+        <Icon name="sun" size={22} class="theme-icon theme-icon--sun" />
+      </button>
+    </div>
+    <nav aria-label={t('header.menu')}>
       {
         navigation.map((section) =>
           section.groups.length ? (
@@ -173,17 +221,23 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
           ),
         )
       }
-      <a class="drawer__link" href={url('/contacts/')}>Контакты</a>
+      <a class="drawer__link" href={url(localize('/contacts/', lang))}>{t('common.contacts')}</a>
     </nav>
     <div class="drawer__cta">
-      <a class="btn btn--primary btn--block" href={url('/enrolle/')}>Поступить в 2026</a>
+      <a class="btn btn--primary btn--block" href={url(localize('/enrolle/', lang))}>{t('header.apply2026')}</a>
       {services[0] && (
         <a class="btn btn--ghost btn--block" href={services[0].href} target="_blank" rel="noopener">
           {services[0].label}
         </a>
       )}
-      <button class="btn btn--ghost btn--block" type="button" data-vision-toggle>
-        <Icon name="eye" size={20} /><span data-vision-label>Версия для слабовидящих</span>
+      <button
+        class="btn btn--ghost btn--block"
+        type="button"
+        data-vision-toggle
+        data-label-on={t('vision.on')}
+        data-label-off={t('vision.off')}
+      >
+        <Icon name="eye" size={20} /><span data-vision-label>{t('vision.on')}</span>
       </button>
     </div>
     <div class="drawer__contacts">
@@ -285,8 +339,9 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
   const visionToggles = [...document.querySelectorAll<HTMLButtonElement>('[data-vision-toggle]')];
 
   function syncVision() {
-    const label = root.dataset.vision === 'low' ? 'Обычная версия' : 'Версия для слабовидящих';
+    const low = root.dataset.vision === 'low';
     for (const toggle of visionToggles) {
+      const label = (low ? toggle.dataset.labelOff : toggle.dataset.labelOn) ?? '';
       toggle.querySelector('[data-vision-label]')!.textContent = label;
       toggle.title = label;
     }
@@ -307,6 +362,45 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     });
   }
   syncVision();
+
+  // Theme, the same way: a saved choice wins; without one the site follows the system setting.
+  const themeToggles = [...document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]')];
+  const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  const savedTheme = () => {
+    try {
+      return localStorage.getItem('theme');
+    } catch {
+      return null;
+    }
+  };
+
+  function syncTheme() {
+    const dark = root.dataset.theme === 'dark';
+    for (const toggle of themeToggles) {
+      const label = (dark ? toggle.dataset.labelLight : toggle.dataset.labelDark) ?? '';
+      toggle.setAttribute('aria-label', label);
+      toggle.title = label;
+    }
+    if (themeColor) themeColor.content = dark ? '#141414' : '#ffffff';
+  }
+
+  for (const toggle of themeToggles) {
+    toggle.addEventListener('click', () => {
+      root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('theme', root.dataset.theme);
+      } catch {
+        // Storage blocked (private mode): the theme lasts until the page is left.
+      }
+      syncTheme();
+    });
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (event) => {
+    if (savedTheme()) return;
+    root.dataset.theme = event.matches ? 'dark' : 'light';
+    syncTheme();
+  });
+  syncTheme();
 </script>
 
 <style>
@@ -365,8 +459,44 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     cursor: pointer;
   }
 
+  .topbar__theme {
+    display: inline-grid;
+    place-items: center;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .topbar__theme:hover {
+    background: rgb(255 255 255 / 0.08);
+  }
+
+  /* The moon switches to the dark theme, the sun back to the light one. */
+  :global(.theme-icon--sun),
+  :global(html[data-theme='dark'] .theme-icon--moon) {
+    display: none;
+  }
+
+  :global(html[data-theme='dark'] .theme-icon--sun) {
+    display: block;
+  }
+
+  .logo-dark,
+  :global(html[data-theme='dark']) .logo-light {
+    display: none;
+  }
+
+  :global(html[data-theme='dark']) .logo-dark {
+    display: block;
+  }
+
   /* Narrower desktops: the eye alone (its label stays for screen readers and as a tooltip)... */
-  @media (max-width: 1365px) {
+  @media (max-width: 1599px) {
     :global(html:not([data-vision='low'])) .topbar__vision span {
       position: absolute;
       width: 1px;
@@ -377,9 +507,16 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     }
   }
 
-  /* ...and no e-mail, which the footer and the contacts page still show. */
-  @media (max-width: 1199px) {
+  /* ...then no e-mail, which the footer and the contacts page still show... */
+  @media (max-width: 1365px) {
     .topbar__contacts a[href^='mailto:'] {
+      display: none;
+    }
+  }
+
+  /* ...and no service links, which are in the menu and the footer too. */
+  @media (max-width: 1199px) {
+    .topbar__links {
       display: none;
     }
   }
@@ -399,7 +536,7 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     position: sticky;
     top: 0;
     z-index: 50;
-    background: rgb(255 255 255 / 0.96);
+    background: color-mix(in srgb, var(--paper) 96%, transparent);
     backdrop-filter: saturate(180%) blur(12px);
     border-bottom: 1px solid var(--line);
     transition: box-shadow 0.25s var(--ease);
@@ -468,7 +605,7 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
   }
 
   .nav__trigger.is-current {
-    color: var(--red-600);
+    color: var(--accent-strong);
   }
 
   .nav__trigger :global(.icon) {
@@ -488,6 +625,18 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
 
   .header__cta {
     margin-left: 6px;
+  }
+
+  /* Without the top bar (below 1024px) the language switch sits in the header itself. */
+  .header__compact {
+    display: flex;
+    align-items: center;
+  }
+
+  @media (min-width: 1024px) {
+    .header__compact {
+      display: none;
+    }
   }
 
   @media (min-width: 1200px) {
@@ -519,13 +668,27 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     }
   }
 
-  @media (max-width: 479px) {
+  @media (max-width: 599px) {
     .header__cta {
+      display: none;
+    }
+  }
+
+  /* Small phones: logo, languages and the menu; search and theme are at the top of the menu. */
+  @media (max-width: 479px) {
+    .header__search {
       display: none;
     }
 
     .header__logo img {
       height: 40px;
+    }
+  }
+
+  /* Narrow phones (360px): a smaller logo leaves room for all three languages. */
+  @media (max-width: 399px) {
+    .header__logo img {
+      height: 34px;
     }
   }
 
@@ -651,7 +814,7 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
 
   .mega li a:hover,
   .mega li a[aria-current='page'] {
-    color: var(--red-600);
+    color: var(--accent-strong);
   }
 
   .mega li a :global(.icon) {
@@ -700,6 +863,14 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     overflow-y: auto;
     overscroll-behavior: contain;
     padding: 20px var(--gutter) 40px;
+  }
+
+  .drawer__prefs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   .drawer__search {

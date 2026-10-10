@@ -1,0 +1,976 @@
+---
+import Icon from '../../components/Icon.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import { getNavigation, isExternal } from '../../config/navigation';
+import { langParam, localize, useTranslations, type Lang } from '../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { availableLangs, getContent, url } from '../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.map((lang) => ({ params: { lang: langParam(lang) }, props: { lang } }));
+}
+
+const { lang } = Astro.props as { lang: Lang };
+const { t, plural, date } = useTranslations(lang);
+const { faculties, hasRoute, home, news, site } = getContent(lang);
+const { services } = getNavigation(lang);
+const to = (path: string) => url(localize(path, lang));
+
+const welcome = home.slides[0];
+// The old slide repeats the university name before the slogan (the h1 already says it):
+// keep the sentences after it, or our own slogan when the name and slogan share one sentence.
+const sentences = (welcome?.text ?? '').split(/(?<=[.!?])\s+/);
+const slogan = /Ташенев|Тәшенев|Tashenev/i.test(welcome?.text ?? '')
+  ? sentences.slice(1).join(' ') || t('home.slogan')
+  : welcome?.text || t('home.slogan');
+// Slides are recognised by their titles, which the old site writes in each language.
+const admission = home.slides.find((slide) => /при[её]м|қабылда|admission/i.test(slide.title));
+const founded = home.slides.find((slide) => /основан|құрылды|founded/i.test(slide.title));
+const photos = home.slides.filter((slide) => slide.image).map((slide) => slide.image!);
+const heroPhoto = photos[0];
+const secondPhoto = founded?.image ?? photos[1];
+
+// Numbers from the old Russian homepage, whose Kazakh version leaves them in Russian and whose
+// English version mistranslates them; the labels come from our own dictionary. The faculty count
+// is left out because the same page lists eight institutes and faculties.
+const STAT_TYPES = [
+  ['students', /студент/i],
+  ['bachelor', /бакалавр/i],
+  ['master', /магистр/i],
+  ['branches', /филиал/i],
+] as const;
+const ruStats = getContent('ru').home.stats;
+const stats = [
+  ...STAT_TYPES.flatMap(([key, pattern]) => {
+    const stat = ruStats.find((candidate) => pattern.test(candidate.label) && /^\d/.test(candidate.value));
+    return stat ? [{ value: stat.value, label: t(`home.stat.${key}`) }] : [];
+  }),
+  ...(founded ? [{ value: '1998', label: t('home.stat.founded') }] : []),
+];
+const features = [t('home.feature.scholarship'), t('home.feature.mobility'), t('home.feature.languages')];
+
+const audiences = [
+  { icon: 'cap', title: t('home.applicants'), text: t('home.applicantsText'), href: localize('/enrolle/', lang) },
+  { icon: 'sparkle', title: t('home.freshmen'), text: t('home.freshmenText'), href: localize('/freshman/', lang) },
+  { icon: 'book', title: t('home.students'), text: t('home.studentsText'), href: localize('/for-student/', lang) },
+  { icon: 'briefcase', title: t('home.teachers'), text: t('home.teachersText'), href: localize('/portal/', lang) },
+].filter((audience) => hasRoute(audience.href));
+
+const steps = home.steps.map((step) => ({
+  ...step,
+  links: step.links.filter((link, index, all) => all.findIndex((other) => other.href === link.href) === index),
+}));
+
+const latest = news.filter((item) => item.category !== 'obyavleniya').slice(0, 5);
+const announcements = news.filter((item) => item.category === 'obyavleniya').slice(0, 4);
+const rector = home.rector[0];
+
+const tools = [...services, ...home.links.filter((link) => /youtube/i.test(link.href)).map((link) => ({ label: link.title, href: link.href }))]
+  .filter((tool, index, all) => all.findIndex((other) => other.href === tool.href) === index)
+  .slice(0, 8);
+const toolIcon = (label: string) =>
+  /почт|пошта|mail/i.test(label)
+    ? 'mail'
+    : /библиот|кітапхана|librar/i.test(label)
+      ? 'book'
+      : /tv|youtube/i.test(label)
+        ? 'play'
+        : /приём|прием|тест|қабылда|admission|test/i.test(label)
+          ? 'cap'
+          : 'laptop';
+
+const { address, phone, email } = site.contacts;
+const tel = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null;
+// Map services find the place best by its Russian address, whatever the page language.
+const ruAddress = getContent('ru').site.contacts.address;
+const mapQuery = encodeURIComponent(`Шымкент, ${ruAddress?.replace(/^\d+,\s*/, '').replace(/^г\.\s*Шымкент,\s*/i, '') ?? 'проспект Кунаева, 21'}`);
+
+const siteUrl = Astro.site ?? new URL('http://localhost');
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'CollegeOrUniversity',
+  name: t('site.name'),
+  alternateName: 'Tashenev University',
+  url: new URL(to('/'), siteUrl).href,
+  logo: new URL(url('/brand/logo.svg'), siteUrl).href,
+  foundingDate: '1998-07-27',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'проспект Кунаева, 21',
+    addressLocality: 'Шымкент',
+    postalCode: '160012',
+    addressCountry: 'KZ',
+  },
+  telephone: phone ?? undefined,
+  email: email ?? undefined,
+  sameAs: site.socials.map((social) => social.href),
+};
+---
+
+<BaseLayout title={t('site.name')} description={t('site.description')} searchable={false} jsonLd={jsonLd}>
+  <!-- Hero -->
+  <section class="hero">
+    <img class="hero__mark" src={url('/brand/mark.svg')} alt="" aria-hidden="true" width="640" height="800" />
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <p class="eyebrow">{t('home.eyebrow')}</p>
+        <h1>{t('site.fullName')}</h1>
+        <p class="lead hero__lead">{slogan}</p>
+        <div class="hero__actions">
+          <a class="btn btn--primary" href={to('/enrolle/')}>{t('home.admissions2026')} <Icon name="arrow-right" size={18} /></a>
+          <a class="btn btn--ghost" href={to('/faculties/')}>{t('home.programs')}</a>
+        </div>
+        {
+          admission && (
+            <a class="hero__notice" href={to('/enrolle/')}>
+              <span class="hero__notice-dot" aria-hidden="true" />
+              <span>
+                <strong>{admission.title}</strong>
+                {/\d/.test(admission.text) ? <span>{admission.text}</span> : <span>{t('home.admissionNotice')}</span>}
+              </span>
+            </a>
+          )
+        }
+      </div>
+      <div class="hero__media">
+        {
+          heroPhoto && (
+            <img
+              class="hero__photo"
+              src={url(heroPhoto.src)}
+              width={heroPhoto.width}
+              height={heroPhoto.height}
+              alt={t('home.heroAlt')}
+              fetchpriority="high"
+              decoding="async"
+            />
+          )
+        }
+        {
+          secondPhoto && secondPhoto !== heroPhoto && (
+            <img
+              class="hero__photo hero__photo--small"
+              src={url(secondPhoto.src)}
+              width={secondPhoto.width}
+              height={secondPhoto.height}
+              alt=""
+              decoding="async"
+            />
+          )
+        }
+        <div class="hero__badge">
+          <strong>{stats[0]?.value ?? '8614'}</strong>
+          <span>{stats[0]?.label ?? t('home.stat.students')}</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Audiences -->
+  <section class="audiences" aria-label={t('home.quickLinks')}>
+    <div class="container grid grid--4">
+      {
+        audiences.map((audience) => (
+          <a class="card audience" href={url(audience.href)}>
+            <span class="audience__icon">
+              <Icon name={audience.icon} size={26} />
+            </span>
+            <h2 class="audience__title">{audience.title}</h2>
+            <p>{audience.text}</p>
+            <Icon name="arrow-right" size={20} class="audience__arrow" />
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- Numbers -->
+  <section class="section section--night numbers">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{t('home.numbersEyebrow')}</p>
+          <h2>{t('home.numbersTitle')}</h2>
+        </div>
+        {hasRoute(localize('/facts/', lang)) && <a class="btn btn--outline-light" href={to('/facts/')}>{t('home.facts')}</a>}
+      </div>
+      <dl class="numbers__grid">
+        {
+          stats.map((stat) => (
+            <div class="numbers__item">
+              <dt>{stat.label}</dt>
+              <dd>{stat.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <ul class="numbers__features" role="list">
+        {features.map((feature) => <li><Icon name="check" size={18} />{feature}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Admission steps -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{t('home.admissionEyebrow')}</p>
+          <h2>{t('home.admissionTitle')}</h2>
+          <p>{t('home.admissionLead')}</p>
+        </div>
+        <a class="link-arrow" href={to('/enrolle/')}>{t('home.forApplicants')} <Icon name="arrow-right" size={18} /></a>
+      </div>
+      <ol class="steps" role="list">
+        {
+          steps.map((step, index) => (
+            <li class="step">
+              <span class="step__number">{step.number || String(index + 1).padStart(2, '0')}</span>
+              <h3>{step.title}</h3>
+              {step.text && <p>{step.text}</p>}
+              {step.links.length > 0 && (
+                <ul class="step__links" role="list">
+                  {step.links.map((link) => (
+                    <li>
+                      <a href={url(link.href)} {...(isExternal(link.href) ? { target: '_blank', rel: 'noopener' } : {})}>
+                        {/^(здесь|осында|мұнда|here)$/i.test(link.title) ? t('home.applyOnline') : link.title}
+                        <Icon name={isExternal(link.href) ? 'external' : 'arrow-right'} size={16} />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- Faculties -->
+  {
+    faculties.length > 0 && (
+      <section class="section section--mist">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">{t('faculties.study')}</p>
+              <h2>{t('faculties.title')}</h2>
+              <p>{t('home.facultiesLead')}</p>
+            </div>
+            <a class="link-arrow" href={to('/departments/')}>{t('departments.all')} <Icon name="arrow-right" size={18} /></a>
+          </div>
+          <div class="grid grid--4">
+            {faculties.map((faculty, index) => (
+              <a class="card faculty" href={to(`/faculties/${faculty.id}/`)}>
+                <span class="faculty__index">{String(index + 1).padStart(2, '0')}</span>
+                <h3>{faculty.name}</h3>
+                {faculty.departments.length > 0 && <p>{plural(faculty.departments.length, 'departments')}</p>}
+                <Icon name="arrow-right" size={20} class="faculty__arrow" />
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- News -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow">{t('news.media')}</p>
+          <h2>{t('news.latest')}</h2>
+        </div>
+        <a class="btn btn--ghost" href={to('/news/')}>{t('news.allNews')}</a>
+      </div>
+      <div class="news-layout">
+        {latest[0] && <NewsCard item={latest[0]} variant="featured" />}
+        <div class="news-layout__side">
+          {latest.slice(1, 5).map((item) => <NewsCard item={item} variant="row" />)}
+        </div>
+      </div>
+      {
+        announcements.length > 0 && (
+          <div class="announcements">
+            <div class="announcements__head">
+              <h3>{t('news.announcements')}</h3>
+              <a class="link-arrow" href={to('/news/category/obyavleniya/')}>
+                {t('news.allAnnouncements')} <Icon name="arrow-right" size={18} />
+              </a>
+            </div>
+            <ul role="list">
+              {announcements.map((item) => (
+                <li>
+                  <a href={to(`/news/${item.id}/`)}>
+                    {item.date && <time datetime={item.date}>{date(item.date)}</time>}
+                    <span>{item.title}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- Rector -->
+  {
+    rector && (
+      <section class="section section--mist">
+        <div class="container rector">
+          {rector.photo && (
+            <img
+              class="rector__photo"
+              src={url(rector.photo.src)}
+              width={rector.photo.width}
+              height={rector.photo.height}
+              alt={rector.name}
+              loading="lazy"
+              decoding="async"
+            />
+          )}
+          <div class="rector__text">
+            <p class="eyebrow">{t('home.rectorEyebrow')}</p>
+            <blockquote>
+              <p class="rector__quote">«{rector.title}»</p>
+              {rector.text && <p class="rector__note">{rector.text}</p>}
+            </blockquote>
+            <p class="rector__name">
+              <strong>{rector.name}</strong>
+              <span>{t('home.rector')}</span>
+            </p>
+            <div class="rector__actions">
+              {rector.href && (
+                <a class="btn btn--primary" href={url(rector.href)}>
+                  {t('home.writeRector')} <Icon name="mail" size={18} />
+                </a>
+              )}
+              <a class="btn btn--ghost" href={to('/leadership/')}>{t('leadership.title')}</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Services -->
+  {
+    tools.length > 0 && (
+      <section class="section">
+        <div class="container">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">e-University</p>
+              <h2>{t('home.servicesTitle')}</h2>
+            </div>
+          </div>
+          <ul class="tools" role="list">
+            {tools.map((tool) => (
+              <li>
+                <a class="tool" href={tool.href} target="_blank" rel="noopener">
+                  <span class="tool__icon">
+                    <Icon name={toolIcon(tool.label)} size={22} />
+                  </span>
+                  <span class="tool__label">{tool.label}</span>
+                  <Icon name="external" size={16} class="tool__ext" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Contacts -->
+  <section class="section section--night contacts">
+    <div class="container contacts__inner">
+      <div>
+        <p class="eyebrow">{t('common.contacts')}</p>
+        <h2>{t('home.contactsTitle')}</h2>
+        <p class="contacts__lead">{t('home.contactsLead')}</p>
+      </div>
+      <ul class="contacts__list" role="list">
+        {address && <li><Icon name="pin" size={22} /><span>{address}</span></li>}
+        {phone && <li><Icon name="phone" size={22} /><a href={tel}>{phone}</a></li>}
+        {email && <li><Icon name="mail" size={22} /><a href={`mailto:${email}`}>{email}</a></li>}
+      </ul>
+      <div class="contacts__actions">
+        <a class="btn btn--primary" href={`https://2gis.kz/shymkent/search/${mapQuery}`} target="_blank" rel="noopener">
+          {t('common.openIn2gis')}
+        </a>
+        <a class="btn btn--outline-light" href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`} target="_blank" rel="noopener">
+          Google Maps
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background: var(--mist);
+  }
+
+  .hero__mark {
+    position: absolute;
+    top: -220px;
+    right: -160px;
+    width: 680px;
+    opacity: 0.06;
+    pointer-events: none;
+  }
+
+  .hero__inner {
+    position: relative;
+    display: grid;
+    gap: 40px;
+    align-items: center;
+    padding-block: clamp(40px, 6vw, 88px) clamp(96px, 10vw, 136px);
+  }
+
+  @media (min-width: 960px) {
+    .hero__inner {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 64px;
+    }
+  }
+
+  .hero h1 {
+    font-size: var(--step-4);
+    max-width: 14ch;
+  }
+
+  .hero__lead {
+    max-width: 46ch;
+    margin-top: 20px;
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  @media (max-width: 479px) {
+    .hero__actions .btn {
+      width: 100%;
+    }
+  }
+
+  .hero__notice {
+    display: flex;
+    gap: 14px;
+    max-width: 520px;
+    margin-top: 28px;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--ink-2);
+    font-size: 0.9688rem;
+    text-decoration: none;
+    transition: box-shadow 0.2s var(--ease);
+  }
+
+  .hero__notice:hover {
+    box-shadow: var(--shadow-sm);
+  }
+
+  .hero__notice strong {
+    display: block;
+    color: var(--ink);
+  }
+
+  .hero__notice-dot {
+    flex: none;
+    width: 10px;
+    height: 10px;
+    margin-top: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    box-shadow: 0 0 0 5px var(--red-50);
+  }
+
+  .hero__media {
+    position: relative;
+    padding: 0 0 48px 48px;
+  }
+
+  .hero__photo {
+    width: 100%;
+    aspect-ratio: 5 / 4;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .hero__photo--small {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 42%;
+    aspect-ratio: 1;
+    border: 6px solid var(--paper);
+  }
+
+  .hero__badge {
+    position: absolute;
+    top: 24px;
+    right: -12px;
+    display: grid;
+    padding: 16px 22px;
+    border-radius: var(--radius);
+    background: var(--red);
+    color: #fff;
+    box-shadow: var(--shadow);
+  }
+
+  .hero__badge strong {
+    font-size: 2rem;
+    line-height: 1;
+  }
+
+  @media (max-width: 599px) {
+    .hero__media {
+      padding: 0 0 32px 24px;
+    }
+
+    .hero__badge {
+      right: 8px;
+      top: 12px;
+      padding: 12px 16px;
+    }
+
+    .hero__badge strong {
+      font-size: 1.5rem;
+    }
+  }
+
+  /* Audiences */
+  .audiences {
+    position: relative;
+    z-index: 2;
+    margin-top: calc(-1 * clamp(56px, 7vw, 80px));
+  }
+
+  .audience {
+    min-height: 100%;
+    padding-right: 52px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .audience__icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: var(--red-50);
+    color: var(--accent);
+  }
+
+  .audience__title {
+    font-size: var(--step-1);
+  }
+
+  .audience :global(.audience__arrow) {
+    position: absolute;
+    right: 24px;
+    top: 28px;
+    color: var(--accent);
+    transition: transform 0.2s var(--ease);
+  }
+
+  .audience:hover :global(.audience__arrow) {
+    transform: translateX(4px);
+  }
+
+  /* Numbers */
+  .numbers__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+    gap: 1px;
+    margin: 0;
+    overflow: hidden;
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.12);
+  }
+
+  .numbers__item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 6px;
+    padding: 28px;
+    background: var(--night);
+  }
+
+  .numbers__item dd {
+    margin: 0;
+    font-size: clamp(2.5rem, 2rem + 2vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1;
+    color: #fff;
+  }
+
+  .numbers__item dt {
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .numbers__features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    margin: 32px 0 0;
+    padding: 0;
+    list-style: none;
+    color: rgb(255 255 255 / 0.85);
+  }
+
+  .numbers__features li {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .numbers__features :global(.icon) {
+    color: var(--accent);
+  }
+
+  /* Steps */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .step {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 26px 24px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .step__number {
+    font-size: 2.25rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+  }
+
+  .step h3 {
+    font-size: 1.25rem;
+  }
+
+  .step p {
+    color: var(--muted);
+    font-size: 0.9688rem;
+  }
+
+  .step__links {
+    display: grid;
+    gap: 6px;
+    margin: auto 0 0;
+    padding: 6px 0 0;
+    list-style: none;
+  }
+
+  .step__links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    font-size: 0.9688rem;
+    color: var(--accent-strong);
+    text-decoration: none;
+  }
+
+  .step__links a:hover {
+    text-decoration: underline;
+  }
+
+  /* Faculties */
+  .faculty {
+    min-height: 190px;
+    padding-right: 52px;
+  }
+
+  .faculty__index {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .faculty h3 {
+    font-size: 1.25rem;
+    line-height: 1.25;
+  }
+
+  .faculty p {
+    margin-top: auto;
+  }
+
+  .faculty :global(.faculty__arrow) {
+    position: absolute;
+    right: 24px;
+    bottom: 26px;
+    color: var(--accent);
+    transition: transform 0.2s var(--ease);
+  }
+
+  .faculty:hover :global(.faculty__arrow) {
+    transform: translateX(4px);
+  }
+
+  /* News */
+  .news-layout {
+    display: grid;
+    gap: 20px;
+  }
+
+  .news-layout__side {
+    display: grid;
+    gap: 14px;
+    align-content: start;
+  }
+
+  @media (min-width: 1024px) {
+    .news-layout {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+      gap: 28px;
+    }
+  }
+
+  .announcements {
+    margin-top: 40px;
+    padding: 28px;
+    border-radius: var(--radius);
+    background: var(--mist);
+  }
+
+  .announcements__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .announcements__head h3 {
+    font-size: var(--step-1);
+  }
+
+  .announcements ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+    gap: 0 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .announcements li a {
+    display: grid;
+    gap: 4px;
+    padding: 14px 0;
+    border-top: 1px solid var(--line-2);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .announcements li a:hover span {
+    color: var(--accent-strong);
+  }
+
+  .announcements time {
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  /* Rector */
+  .rector {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+  }
+
+  @media (min-width: 860px) {
+    .rector {
+      grid-template-columns: 340px minmax(0, 1fr);
+      gap: 64px;
+    }
+  }
+
+  .rector__photo {
+    width: 100%;
+    max-width: 340px;
+    aspect-ratio: 4 / 4.6;
+    object-fit: cover;
+    object-position: center 20%;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+  }
+
+  .rector blockquote {
+    margin: 0;
+  }
+
+  .rector__quote {
+    font-size: var(--step-3);
+    font-weight: 700;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  .rector__note {
+    margin-top: 16px;
+    max-width: 56ch;
+    color: var(--ink-2);
+  }
+
+  .rector__name {
+    display: grid;
+    margin-top: 24px;
+  }
+
+  .rector__name span {
+    color: var(--muted);
+  }
+
+  .rector__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  /* Services */
+  .tools {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .tool {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    height: 100%;
+    padding: 16px 18px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    font-weight: 700;
+    text-decoration: none;
+    transition:
+      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  .tool:hover {
+    border-color: var(--ink);
+  }
+
+  .tool__icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: var(--mist);
+    color: var(--accent);
+  }
+
+  .tool__label {
+    flex: 1;
+    line-height: 1.3;
+  }
+
+  .tool :global(.tool__ext) {
+    flex: none;
+    color: var(--muted);
+  }
+
+  /* Contacts */
+  .contacts__inner {
+    display: grid;
+    gap: 32px;
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .contacts__inner {
+      grid-template-columns: 1.1fr 1fr auto;
+      gap: 48px;
+    }
+  }
+
+  .contacts h2 {
+    font-size: var(--step-3);
+  }
+
+  .contacts__lead {
+    margin-top: 12px;
+    color: rgb(255 255 255 / 0.72);
+  }
+
+  .contacts__list {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 1.125rem;
+  }
+
+  .contacts__list li {
+    display: flex;
+    gap: 12px;
+  }
+
+  .contacts__list :global(.icon) {
+    flex: none;
+    color: var(--accent);
+  }
+
+  .contacts__list a {
+    color: #fff;
+    text-decoration: none;
+  }
+
+  .contacts__list a:hover {
+    text-decoration: underline;
+  }
+
+  .contacts__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (min-width: 960px) {
+    .contacts__actions {
+      flex-direction: column;
+    }
+  }
+</style>

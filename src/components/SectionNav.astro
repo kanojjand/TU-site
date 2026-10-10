@@ -1,6 +1,7 @@
 ---
 // "In this section" list next to a content page; below the content on phones.
 import { isExternal, type NavSection } from '../config/navigation';
+import { langFromPath, useTranslations } from '../i18n';
 import { url } from '../lib/content';
 import Icon from './Icon.astro';
 
@@ -10,11 +11,13 @@ interface Props {
 
 const { section } = Astro.props;
 const path = Astro.url.pathname;
+const { t } = useTranslations(langFromPath(path));
+const heading = t('common.section', { name: section.label });
 ---
 
 <aside class="section-nav">
-  <nav aria-label={`Раздел «${section.label}»`}>
-    <p class="section-nav__title">Раздел «{section.label}»</p>
+  <nav aria-label={heading}>
+    <p class="section-nav__title">{heading}</p>
     {
       section.groups.map((group) => (
         <div class="section-nav__group">
@@ -94,7 +97,7 @@ const path = Astro.url.pathname;
 
   a[aria-current='page'] {
     background: var(--red-50);
-    color: var(--red-700);
+    color: var(--accent-deep);
     font-weight: 700;
   }
 

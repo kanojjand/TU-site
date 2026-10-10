@@ -1,0 +1,12 @@
+{
+  "slug": "practice-bases",
+  "title": "Тәжірибе базалары",
+  "description": "",
+  "hero": {
+    "src": "/media/hero/35f742e203d2eefe-1600.webp",
+    "width": 1280,
+    "height": 437
+  },
+  "html": "<p>Тәжірибе базалары · PDF</p> <ul class=\"links\"><li><a href=\"https://tashenev.edu.kz/docs/practie-bases.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Ашуға </a></li><li><a href=\"https://tashenev.edu.kz/docs/practice-bases.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Жүктеп алу </a></li></ul>  <p><a href=\"https://tashenev.edu.kz/docs/practice-bases.pdf#toolbar=0&amp;view=FitH\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">Құжатты ашу (PDF)</a></p>",
+  "source": "https://tashenev.edu.kz/kz/practice-bases"
+}

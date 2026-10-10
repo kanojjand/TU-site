@@ -16,6 +16,10 @@
   --mist: #f7f7f7;
   --paper: #ffffff;
   --night: #171717;
+  /* Brand red as a text colour; the dark theme swaps in lighter reds that stay readable. */
+  --accent: var(--red);
+  --accent-strong: var(--red-600);
+  --accent-deep: var(--red-700);
 
   --font: 'PT Sans', Arial, 'Helvetica Neue', sans-serif;
   --step--1: 0.875rem;
@@ -125,6 +129,33 @@ button {
   }
 }
 
+/* ---------- Dark theme ----------
+   data-theme="dark" on <html>, set before first paint from the visitor's choice or the
+   system setting (BaseLayout). Surfaces and text invert; buttons keep the brand red,
+   red text switches to lighter reds that keep 4.5:1 on the dark surfaces. */
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --ink: #ececec;
+  --ink-2: #cfcfcf;
+  --muted: #a6a6a6;
+  --line: #2e2e2e;
+  --line-2: #474747;
+  --mist: #1c1c1c;
+  --paper: #141414;
+  --night: #0b0b0b;
+  --red-50: #33141b;
+  --accent: #ff5c74;
+  --accent-strong: #ff7a8e;
+  --accent-deep: #ff94a5;
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4), 0 4px 12px -6px rgb(0 0 0 / 0.6);
+  --shadow: 0 2px 6px rgb(0 0 0 / 0.35), 0 24px 48px -24px rgb(0 0 0 / 0.8);
+}
+
+html[data-theme='dark'] img:not([src$='.svg']) {
+  filter: brightness(0.92);
+}
+
 /* ---------- Low-vision mode ----------
    Toggled from the header (data-vision="low" on <html>, kept in localStorage):
    larger text everywhere, black text, darker brand red, visible borders and no motion. */
@@ -138,6 +169,19 @@ html[data-vision='low'] {
   --red: #a3001f;
   --red-600: #8a001a;
   font-size: 125%;
+}
+
+html[data-vision='low'][data-theme='dark'] {
+  --ink: #ffffff;
+  --ink-2: #ffffff;
+  --muted: #e6e6e6;
+  --line: #8c8c8c;
+  --line-2: #bdbdbd;
+  --paper: #000000;
+  --mist: #0f0f0f;
+  --accent: #ff8a9c;
+  --accent-strong: #ffa3b1;
+  --accent-deep: #ffbdc7;
 }
 
 html[data-vision='low'] body {
@@ -165,7 +209,7 @@ html[data-vision='low'] *::after {
   padding: 12px 18px;
   border-radius: var(--radius-sm);
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
   font-weight: 700;
 }
 
@@ -237,7 +281,7 @@ html[data-vision='low'] *::after {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--red);
+  color: var(--accent);
 }
 
 .eyebrow::before {
@@ -280,7 +324,7 @@ html[data-vision='low'] *::after {
 
 .btn {
   --btn-bg: var(--ink);
-  --btn-fg: #fff;
+  --btn-fg: var(--paper);
   --btn-border: transparent;
   display: inline-flex;
   align-items: center;
@@ -314,6 +358,7 @@ html[data-vision='low'] *::after {
 
 .btn--primary {
   --btn-bg: var(--red);
+  --btn-fg: #fff;
 }
 
 .btn--primary:hover {
@@ -330,13 +375,14 @@ html[data-vision='low'] *::after {
   --btn-border: var(--ink);
 }
 
+/* Sits on photos and dark sections, so it stays white in both themes. */
 .btn--light {
   --btn-bg: #fff;
-  --btn-fg: var(--ink);
+  --btn-fg: #232323;
 }
 
 .btn--light:hover {
-  --btn-bg: var(--mist);
+  --btn-bg: #ececec;
 }
 
 .btn--outline-light {
@@ -364,7 +410,7 @@ html[data-vision='low'] *::after {
   align-items: center;
   gap: 8px;
   font-weight: 700;
-  color: var(--red-600);
+  color: var(--accent-strong);
   text-decoration: none;
 }
 
@@ -383,7 +429,7 @@ html[data-vision='low'] *::after {
   padding: 4px 10px;
   border-radius: 999px;
   background: var(--red-50);
-  color: var(--red-700);
+  color: var(--accent-deep);
   font-size: 0.8125rem;
   font-weight: 700;
   line-height: 1.3;
@@ -525,7 +571,7 @@ a.card:hover {
 }
 
 .prose a {
-  color: var(--red-600);
+  color: var(--accent-strong);
   text-decoration: underline;
   text-decoration-color: rgb(224 0 44 / 0.35);
   transition: text-decoration-color 0.2s var(--ease);
@@ -542,7 +588,7 @@ a.card:hover {
   padding: 1px 6px;
   border-radius: 6px;
   background: var(--red-50);
-  color: var(--red-700);
+  color: var(--accent-deep);
   font-size: 0.7em;
   font-weight: 700;
   line-height: 1.6;
@@ -592,7 +638,7 @@ a.card:hover {
 .prose ul.links a:not([data-file])::after {
   content: '→';
   flex: none;
-  color: var(--red);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -601,7 +647,7 @@ a.card:hover {
 }
 
 .prose li::marker {
-  color: var(--red);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -665,7 +711,7 @@ a.card:hover {
 }
 
 .prose tbody tr:nth-child(even) {
-  background: #fbfbfb;
+  background: color-mix(in srgb, var(--mist) 50%, var(--paper));
 }
 
 .prose details {

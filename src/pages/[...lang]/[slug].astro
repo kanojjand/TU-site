@@ -1,0 +1,123 @@
+---
+import Icon from '../../components/Icon.astro';
+import PageHero, { type Crumb } from '../../components/PageHero.astro';
+import SectionNav from '../../components/SectionNav.astro';
+import SourceNote from '../../components/SourceNote.astro';
+import { getNavigation } from '../../config/navigation';
+import { langParam, localize, useTranslations, type Lang } from '../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { availableLangs, getContent, summarize, withBase, type Page } from '../../lib/content';
+
+export function getStaticPaths() {
+  // These slugs have their own templates (lists of faculties, departments, people).
+  const reserved = new Set(['faculties', 'departments', 'leadership', 'news', 'search', 'sitemap']);
+  return availableLangs.flatMap((lang) =>
+    getContent(lang)
+      .pages.filter((page) => !reserved.has(page.slug))
+      .map((page) => ({ params: { lang: langParam(lang), slug: page.slug }, props: { lang, page } })),
+  );
+}
+
+const { lang, page } = Astro.props as { lang: Lang; page: Page };
+const { t } = useTranslations(lang);
+const { site } = getContent(lang);
+const section = getNavigation(lang).sectionFor(localize(`/${page.slug}/`, lang));
+const crumbs: Crumb[] = [...(section ? [{ label: section.label }] : []), { label: page.title }];
+const description = page.description || summarize(page.html);
+
+// On the old site the contacts live inside the header photo; here they get their own card.
+const isContacts = page.slug === 'contacts';
+const { address, phone, email } = site.contacts;
+// Map services find the place best by its Russian address, whatever the page language.
+const ruAddress = getContent('ru').site.contacts.address;
+const mapQuery = encodeURIComponent(`Шымкент, ${ruAddress?.replace(/^\d+,\s*/, '').replace(/^г\.\s*Шымкент,\s*/i, '') ?? ''}`);
+---
+
+<BaseLayout title={page.title} description={description} image={page.hero?.src}>
+  <PageHero title={page.title} description={page.description} image={page.hero} crumbs={crumbs} />
+  <div class:list={['container page-body', { 'has-aside': section }]}>
+    <article>
+      {
+        isContacts && (
+          <div class="contact-card">
+            <ul role="list">
+              {address && <li><Icon name="pin" size={22} /><span><small>{t('common.address')}</small>{address}</span></li>}
+              {phone && <li><Icon name="phone" size={22} /><span><small>{t('common.phone')}</small><a href={`tel:${phone.replace(/[^\d+]/g, '')}`}>{phone}</a></span></li>}
+              {email && <li><Icon name="mail" size={22} /><span><small>E-mail</small><a href={`mailto:${email}`}>{email}</a></span></li>}
+            </ul>
+            <div class="contact-card__actions">
+              <a class="btn btn--primary btn--sm" href={`https://2gis.kz/shymkent/search/${mapQuery}`} target="_blank" rel="noopener">{t('common.2gis')}</a>
+              <a class="btn btn--ghost btn--sm" href={`https://www.google.com/maps/search/?api=1&query=${mapQuery}`} target="_blank" rel="noopener">Google Maps</a>
+              {site.socials.map((social) => (
+                <a class="btn btn--ghost btn--sm" href={social.href} target="_blank" rel="noopener">{social.title}</a>
+              ))}
+            </div>
+          </div>
+        )
+      }
+      {
+        page.html ? (
+          <div class="prose" set:html={withBase(page.html)} />
+        ) : (
+          <p class="empty-note">{t('common.empty')}</p>
+        )
+      }
+      <SourceNote href={page.source} />
+    </article>
+    {section && <SectionNav section={section} />}
+  </div>
+</BaseLayout>
+
+<style>
+  .contact-card {
+    display: grid;
+    gap: 24px;
+    margin-bottom: 40px;
+    padding: clamp(22px, 3vw, 32px);
+    border-radius: var(--radius);
+    background: var(--mist);
+  }
+
+  .contact-card ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contact-card li {
+    display: flex;
+    gap: 12px;
+    font-size: 1.0625rem;
+  }
+
+  .contact-card li :global(.icon) {
+    flex: none;
+    color: var(--accent);
+  }
+
+  .contact-card small {
+    display: block;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .contact-card li a {
+    color: var(--ink);
+  }
+
+  .contact-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .contact-card__actions a {
+    text-decoration: none;
+  }
+</style>

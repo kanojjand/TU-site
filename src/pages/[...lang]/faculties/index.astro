@@ -1,0 +1,153 @@
+---
+import Icon from '../../../components/Icon.astro';
+import PageHero from '../../../components/PageHero.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { langParam, localize, useTranslations, type Lang } from '../../../i18n';
+import { availableLangs, getContent, url, withBase } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.map((lang) => ({ params: { lang: langParam(lang) }, props: { lang } }));
+}
+
+const { lang } = Astro.props as { lang: Lang };
+const { t, plural } = useTranslations(lang);
+const { faculties, pageBySlug } = getContent(lang);
+const to = (path: string) => url(localize(path, lang));
+const intro = pageBySlug.get('faculties');
+// The old page repeats the list of faculties as links and pictures; only its opening paragraph is kept.
+const lead = intro?.html.match(/<p>([\s\S]*?)<\/p>/)?.[1] ?? '';
+---
+
+<BaseLayout title={t('faculties.title')} description={t('faculties.description')}>
+  <PageHero
+    title={t('faculties.title')}
+    description={intro?.description || t('faculties.lead')}
+    eyebrow={t('faculties.study')}
+    crumbs={[{ label: t('faculties.title') }]}
+  />
+  <div class="container faculties">
+    {lead && <p class="prose faculties__intro" set:html={withBase(lead)} />}
+    <div class="grid grid--2">
+      {
+        faculties.map((faculty, index) => (
+          <article class="faculty-card">
+            <a class="faculty-card__link" href={to(`/faculties/${faculty.id}/`)}>
+              <span class="faculty-card__index">{String(index + 1).padStart(2, '0')}</span>
+              <h2>{faculty.name}</h2>
+              {faculty.head && (
+                <p class="faculty-card__head">
+                  {faculty.head.role || t('faculties.head')}: {faculty.head.name}
+                </p>
+              )}
+              <Icon name="arrow-right" size={22} class="faculty-card__arrow" />
+            </a>
+            {faculty.departments.length > 0 && (
+              <div class="faculty-card__deps">
+                <p>{plural(faculty.departments.length, 'departments')}</p>
+                <ul role="list">
+                  {faculty.departments.map((department) => (
+                    <li>
+                      <a href={to(`/departments/${department.id}/`)}>{department.name}</a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .faculties {
+    padding-block: clamp(40px, 5vw, 64px) clamp(56px, 7vw, 96px);
+  }
+
+  .faculties__intro {
+    margin-bottom: 40px;
+  }
+
+  .faculty-card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+  }
+
+  .faculty-card__link {
+    position: relative;
+    display: grid;
+    gap: 10px;
+    padding: 28px 64px 24px 28px;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .faculty-card__link:hover h2 {
+    color: var(--accent-strong);
+  }
+
+  .faculty-card__index {
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .faculty-card h2 {
+    font-size: var(--step-2);
+    transition: color 0.2s var(--ease);
+  }
+
+  .faculty-card__head {
+    color: var(--muted);
+  }
+
+  .faculty-card :global(.faculty-card__arrow) {
+    position: absolute;
+    top: 30px;
+    right: 26px;
+    color: var(--accent);
+    transition: transform 0.2s var(--ease);
+  }
+
+  .faculty-card__link:hover :global(.faculty-card__arrow) {
+    transform: translateX(4px);
+  }
+
+  .faculty-card__deps {
+    margin-top: auto;
+    padding: 18px 28px 24px;
+    border-top: 1px solid var(--line);
+    background: var(--mist);
+  }
+
+  .faculty-card__deps p {
+    margin-bottom: 8px;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .faculty-card__deps ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .faculty-card__deps a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  .faculty-card__deps a:hover {
+    color: var(--accent-strong);
+    text-decoration: underline;
+  }
+</style>

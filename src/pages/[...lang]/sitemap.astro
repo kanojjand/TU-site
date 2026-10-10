@@ -1,0 +1,137 @@
+---
+// Human-readable map of every migrated page, including pages that are only
+// linked from other pages' text and therefore not in the main menu.
+import PageHero from '../../components/PageHero.astro';
+import { getNavigation } from '../../config/navigation';
+import { LOCALE, langParam, localize, useTranslations, type Lang } from '../../i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { availableLangs, getContent, url } from '../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.map((lang) => ({ params: { lang: langParam(lang) }, props: { lang } }));
+}
+
+const { lang } = Astro.props as { lang: Lang };
+const { t } = useTranslations(lang);
+const { categories, departments, faculties, news, pages } = getContent(lang);
+const { navigation } = getNavigation(lang);
+const to = (path: string) => url(localize(path, lang));
+
+const inMenu = new Set(navigation.flatMap((section) => section.groups.flatMap((group) => group.links.map((link) => link.href))));
+const other = pages
+  .filter((page) => !inMenu.has(localize(`/${page.slug}/`, lang)) && !['faculties', 'departments', 'leadership'].includes(page.slug))
+  .sort((a, b) => a.title.localeCompare(b.title, LOCALE[lang]));
+const counts = new Map(categories.map((c) => [c.slug, news.filter((item) => item.category === c.slug).length]));
+---
+
+<BaseLayout title={t('sitemap.title')} description={t('sitemap.description')} searchable={false}>
+  <PageHero title={t('sitemap.title')} crumbs={[{ label: t('sitemap.title') }]} />
+  <div class="container map">
+    {
+      navigation
+        .filter((section) => section.groups.length)
+        .map((section) => (
+          <section>
+            <h2>{section.label}</h2>
+            {section.groups.map((group) => (
+              <>
+                {section.groups.length > 1 && <h3>{group.title}</h3>}
+                <ul role="list">
+                  {group.links.map((link) => (
+                    <li>
+                      <a href={url(link.href)}>{link.label}</a>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ))}
+          </section>
+        ))
+    }
+    <section>
+      <h2>{t('departments.title')}</h2>
+      <ul role="list">
+        {departments.map((department) => <li><a href={to(`/departments/${department.id}/`)}>{department.name}</a></li>)}
+      </ul>
+      <h3>{t('faculties.institutes')}</h3>
+      <ul role="list">
+        {faculties.map((faculty) => <li><a href={to(`/faculties/${faculty.id}/`)}>{faculty.name}</a></li>)}
+      </ul>
+    </section>
+    <section>
+      <h2>{t('news.media')}</h2>
+      <ul role="list">
+        <li><a href={to('/news/')}>{t('news.allItemsCount', { n: news.length })}</a></li>
+        {
+          categories
+            .filter((c) => counts.get(c.slug))
+            .map((c) => (
+              <li>
+                <a href={to(`/news/category/${c.slug}/`)}>
+                  {c.name} ({counts.get(c.slug)})
+                </a>
+              </li>
+            ))
+        }
+      </ul>
+    </section>
+    {
+      other.length > 0 && (
+        <section>
+          <h2>{t('sitemap.other')}</h2>
+          <ul role="list">
+            {other.map((page) => (
+              <li>
+                <a href={to(`/${page.slug}/`)}>{page.title}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .map {
+    columns: 3 300px;
+    column-gap: 48px;
+    padding-block: 40px clamp(56px, 7vw, 96px);
+  }
+
+  section {
+    break-inside: avoid;
+    margin-bottom: 36px;
+  }
+
+  h2 {
+    margin-bottom: 12px;
+    font-size: var(--step-1);
+  }
+
+  h3 {
+    margin: 16px 0 6px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    color: var(--ink-2);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent-strong);
+    text-decoration: underline;
+  }
+</style>

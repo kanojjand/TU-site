@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// Migrates the Russian version of tashenev.edu.kz into JSON files under
-// src/data and resized images under public/media. Pages and images are cached
-// in .cache/, so re-running only rebuilds the output.
+// Migrates one language version of tashenev.edu.kz into JSON files under
+// src/data/<lang> and resized images under public/media (shared by all languages).
+// Pages are cached outside the project, so re-running only rebuilds the output.
 //
-//   npm run scrape                       everything (~1400 pages; 10–20 min the first time)
+//   npm run scrape                       Russian, everything (~1400 pages; 30 min the first time)
+//   npm run scrape -- --lang=kz          Kazakh (--lang=en: English)
 //   npm run scrape -- --news-limit=40    only the 40 newest news items (quick check)
 
 import fs from 'node:fs/promises';
@@ -12,11 +13,17 @@ import * as cheerio from 'cheerio';
 import { cleanHtml, excerpt, fixMixedScript, internalLinks } from './lib/clean.mjs';
 import { getPage } from './lib/http.mjs';
 import { imageFailures, localImage } from './lib/images.mjs';
-import { MEDIA_CATEGORIES, ORIGIN, absolute, localPath } from './lib/routes.mjs';
+import { LANGS, MEDIA_CATEGORIES, ORIGIN, absolute, langOf, localPath } from './lib/routes.mjs';
 
-const DATA_DIR = path.resolve('src/data');
-const GENERATED_DIRS = ['pages', 'news', 'faculties', 'departments', 'people'];
 const args = Object.fromEntries(process.argv.slice(2).map((arg) => arg.replace(/^--/, '').split('=')));
+const LANG = args.lang || 'ru';
+if (!(LANG in LANGS)) throw new Error(`--lang must be one of: ${Object.keys(LANGS).join(', ')}`);
+/** Path prefix of this language in the new site ("" for Russian, "/kz", "/en"). */
+const PREFIX = LANGS[LANG];
+/** This language's root on the old site. */
+const BASE = `${ORIGIN}/${LANG}`;
+const DATA_DIR = path.resolve('src/data', LANG);
+const GENERATED_DIRS = ['pages', 'news', 'faculties', 'departments', 'people'];
 const NEWS_LIMIT = Number(args['news-limit']) || Infinity;
 const TODAY = new Date().toISOString().slice(0, 10);
 
@@ -117,7 +124,7 @@ async function readHead($, $main, base) {
 }
 
 async function scrapePage(url, $, label) {
-  const slug = localPath(url).replace(/^\/|\/$/g, '');
+  const slug = localPath(url).slice(PREFIX.length).replace(/^\/|\/$/g, '');
   const hero = await readHero($, url);
   const $main = $('main').first().clone();
   $main.find('.title_img__wrap').remove();
@@ -239,7 +246,7 @@ async function scrapeNewsItem(id, url, $, meta) {
   });
   const $body = ($section.find('.text_p').first().length ? $section.find('.text_p').first() : $section).clone();
   $body.find('.imgsBlockInNewItem').remove();
-  const fullTitle = heroTitle || meta.title || `Новость №${id}`;
+  const fullTitle = heroTitle || meta.title || `${{ ru: 'Новость №', kz: 'Жаңалық №', en: 'News item #' }[LANG]}${id}`;
   const title = withoutTrailingDate(fullTitle);
   const html = withoutLeadingTitle(await cleanHtml($body.html() || '', { base: url }), fullTitle);
   const $firstImage = cheerio.load(html, null, false)('img').first();
@@ -296,14 +303,24 @@ async function chooseCovers(news) {
 
 // Titles the old site takes from link text, writes in capitals or with typos.
 const PAGE_FIXES = {
-  bachelor: { title: 'Бакалавриат' },
-  magistracy: { title: 'Магистратура', description: 'Приём в магистратуру в 2026–2027 учебном году' },
-  freshman: { title: 'Первокурснику' },
-  leadership: { title: 'Руководство университета' },
-  contacts: { title: 'Контакты' },
-  question: { title: 'Открытый ректорат: вопросы и ответы' },
-  'accreditation-licensing': { title: 'Центр аккредитации и лицензирования' },
-};
+  ru: {
+    bachelor: { title: 'Бакалавриат' },
+    magistracy: { title: 'Магистратура', description: 'Приём в магистратуру в 2026–2027 учебном году' },
+    freshman: { title: 'Первокурснику' },
+    leadership: { title: 'Руководство университета' },
+    contacts: { title: 'Контакты' },
+    question: { title: 'Открытый ректорат: вопросы и ответы' },
+    'accreditation-licensing': { title: 'Центр аккредитации и лицензирования' },
+  },
+  kz: {
+    leadership: { title: 'Университет басшылығы' },
+    contacts: { title: 'Байланыс' },
+  },
+  en: {
+    leadership: { title: 'University leadership' },
+    contacts: { title: 'Contacts' },
+  },
+}[LANG];
 
 function fixPage(page) {
   Object.assign(page, PAGE_FIXES[page.slug] ?? {});
@@ -311,9 +328,9 @@ function fixPage(page) {
   return page;
 }
 
-/** /ru/media lists every item with its date and a "Новости"/"Объявления" label. */
+/** /<lang>/media lists every item with its date and a section label ("Новости", "Объявления"…). */
 async function scrapeMediaIndex() {
-  const $ = await load(`${ORIGIN}/ru/media`);
+  const $ = await load(`${BASE}/media`);
   const items = new Map();
   if (!$) return items;
   $('.section_news__block').each((_, el) => {
@@ -342,7 +359,7 @@ async function scrapeMediaIndex() {
 async function scrapeMediaCategories() {
   const categoryOf = new Map();
   for (const category of [...MEDIA_CATEGORIES].reverse()) {
-    const $ = await load(`${ORIGIN}/ru/media/${category.id}`);
+    const $ = await load(`${BASE}/media/${category.id}`);
     if (!$) continue;
     let $links = $('main .section_news__block a[href*="/media/item/"]');
     if (!$links.length) $links = $('main a[href*="/media/item/"]').filter((_, a) => !$(a).closest('.fresh_news__wrap').length);
@@ -354,13 +371,13 @@ async function scrapeMediaCategories() {
         count += 1;
       }
     });
-    console.log(`  раздел «${category.name}»: ${count}`);
+    console.log(`  раздел «${category.name[LANG]}»: ${count}`);
   }
   return categoryOf;
 }
 
 async function scrapeHome($) {
-  const base = `${ORIGIN}/ru`;
+  const base = BASE;
   // Each slide keeps its picture next to the title; the first slide plays a video instead.
   const slides = [];
   for (const el of $('.home_slider__title').toArray()) {
@@ -412,8 +429,15 @@ async function scrapeHome($) {
   return { slides, stats, steps, rector, links };
 }
 
+/** How the contacts page labels the address and the phone in each language. */
+const CONTACT_LABELS = {
+  ru: { address: 'Адрес', phone: 'Телефон' },
+  kz: { address: 'Мекен-?жайы', phone: 'Телефон' },
+  en: { address: 'Address', phone: 'Phone' },
+};
+
 async function scrapeSite($home) {
-  const base = `${ORIGIN}/ru`;
+  const base = BASE;
   const menu = $home('header nav .menuItem')
     .map((_, item) => {
       const $top = $home(item).children('a.nav__link');
@@ -436,11 +460,12 @@ async function scrapeSite($home) {
     .filter((s) => /facebook|instagram|youtube|t\.me|tiktok|vk\.com/i.test(s.href));
 
   const contacts = { address: null, phone: null, email: null };
-  const $c = await load(`${ORIGIN}/ru/contacts`);
+  const $c = await load(`${BASE}/contacts`);
   if ($c) {
     const text = squash($c('main').text());
-    contacts.address = (text.match(/Адрес:\s*(.+?)\.?\s*(?:Телефон|Факс|E-mail|$)/i) || [])[1] || null;
-    contacts.phone = (text.match(/Телефон:\s*([+\d][\d\s()+-]{6,}\d)/i) || [])[1] || null;
+    const { address, phone } = CONTACT_LABELS[LANG];
+    contacts.address = (text.match(new RegExp(`(?:${address}):\\s*(.+?)\\.?\\s*(?:${phone}|Факс|Fax|E-mail|$)`, 'i')) || [])[1] || null;
+    contacts.phone = (text.match(new RegExp(`(?:${phone}):\\s*([+\\d][\\d\\s()+-]{6,}\\d)`, 'i')) || [])[1] || null;
     contacts.email = (text.match(/[\w.+-]+@[\w-]+\.[\w.-]+/) || [])[0] || null;
     $c('main a[href]').each((_, a) => {
       const href = $c(a).attr('href');
@@ -458,8 +483,8 @@ async function writeJson(file, data) {
 
 async function main() {
   console.log('Главная и меню…');
-  const $home = await load(`${ORIGIN}/ru`);
-  if (!$home) throw new Error('Не удалось загрузить https://tashenev.edu.kz/ru');
+  const $home = await load(BASE);
+  if (!$home) throw new Error(`Не удалось загрузить ${BASE}`);
   const site = await scrapeSite($home);
   const home = await scrapeHome($home);
 
@@ -469,17 +494,18 @@ async function main() {
   const queue = [];
   const extraNewsIds = new Set();
   const enqueue = (abs, label) => {
-    if (!abs || !localPath(abs)) return;
+    // Other languages are separate runs; the old site's language switcher links to them.
+    if (!abs || !localPath(abs) || langOf(abs) !== LANG) return;
     const url = canonical(abs);
-    const itemMatch = url.match(/\/ru\/media\/item\/(\d+)$/);
+    const itemMatch = url.match(/\/media\/item\/(\d+)$/);
     if (itemMatch) extraNewsIds.add(Number(itemMatch[1]));
-    if (/\/ru\/media(\/|$)/.test(new URL(url).pathname) || localPath(url) === '/' || seen.has(url)) return;
+    if (/^\/[a-z]{2}\/media(\/|$)/.test(new URL(url).pathname) || localPath(url) === `${PREFIX}/` || seen.has(url)) return;
     seen.add(url);
     queue.push(url);
     if (label && !titles.has(url)) titles.set(url, label);
   };
-  $home('header a[href], footer a[href], main a[href]').each((_, a) => enqueue(absolute($home(a).attr('href')), squash($home(a).text())));
-  const sitemap = await getPage(`${ORIGIN}/sitemap_ru.xml`);
+  $home('header a[href], footer a[href], main a[href]').each((_, a) => enqueue(absolute($home(a).attr('href'), BASE), squash($home(a).text())));
+  const sitemap = await getPage(`${ORIGIN}/sitemap_${LANG}.xml`);
   for (const m of (sitemap.body || '').matchAll(/<loc>([^<]+)<\/loc>/g)) enqueue(m[1].trim());
 
   console.log('Страницы…');
@@ -496,12 +522,13 @@ async function main() {
         if (!$) return;
         $('main a[href]').each((_, a) => enqueue(absolute($(a).attr('href'), url), squash($(a).text())));
         const local = localPath(url);
+        const rel = local.slice(PREFIX.length);
         let m;
-        if ((m = local.match(/^\/faculties\/(\d+)\/$/))) faculties.push(await scrapeFaculty(Number(m[1]), url, $));
-        else if ((m = local.match(/^\/departments\/(\d+)\/$/))) departments.push(await scrapeDepartment(Number(m[1]), url, $));
-        else if ((m = local.match(/^\/leadership\/(\d+)\/$/))) people.push(await scrapePerson(Number(m[1]), url, $));
+        if ((m = rel.match(/^\/faculties\/(\d+)\/$/))) faculties.push(await scrapeFaculty(Number(m[1]), url, $));
+        else if ((m = rel.match(/^\/departments\/(\d+)\/$/))) departments.push(await scrapeDepartment(Number(m[1]), url, $));
+        else if ((m = rel.match(/^\/leadership\/(\d+)\/$/))) people.push(await scrapePerson(Number(m[1]), url, $));
         else {
-          if (local === '/leadership/') leadership = await scrapeLeadership(url, $);
+          if (rel === '/leadership/') leadership = await scrapeLeadership(url, $);
           pages.push(await scrapePage(url, $, titles.get(url)));
         }
         console.log(`  ✓ ${local}`);
@@ -538,11 +565,12 @@ async function main() {
   let done = 0;
   await Promise.all(
     ids.map(async (id) => {
-      const url = `${ORIGIN}/ru/media/item/${id}`;
+      const url = `${BASE}/media/item/${id}`;
       const $ = await load(url);
       if ($) {
         const meta = index.get(id);
-        const category = categoryOf.get(id) || (meta.label === 'Объявления' ? 'obyavleniya' : 'novosti');
+        const category =
+          categoryOf.get(id) || MEDIA_CATEGORIES.find((c) => c.name[LANG] === meta.label)?.slug || 'novosti';
         news.push(await scrapeNewsItem(id, url, $, { ...meta, category }));
       }
       done += 1;
@@ -554,13 +582,15 @@ async function main() {
   pages.forEach(fixPage);
 
   // ---- repair links that point to pages we could not migrate -----------------
-  const routes = new Set(['/', '/news/', '/faculties/', '/departments/', '/leadership/', '/search/', '/sitemap/']);
-  for (const page of pages) routes.add(`/${page.slug}/`);
-  for (const f of faculties) routes.add(`/faculties/${f.id}/`);
-  for (const d of departments) routes.add(`/departments/${d.id}/`);
-  for (const p of people) routes.add(`/leadership/${p.id}/`);
-  for (const n of news) routes.add(`/news/${n.id}/`);
-  for (const c of MEDIA_CATEGORIES) routes.add(`/news/category/${c.slug}/`);
+  const routes = new Set(
+    ['/', '/news/', '/faculties/', '/departments/', '/leadership/', '/search/', '/sitemap/'].map((route) => PREFIX + route),
+  );
+  for (const page of pages) routes.add(`${PREFIX}/${page.slug}/`);
+  for (const f of faculties) routes.add(`${PREFIX}/faculties/${f.id}/`);
+  for (const d of departments) routes.add(`${PREFIX}/departments/${d.id}/`);
+  for (const p of people) routes.add(`${PREFIX}/leadership/${p.id}/`);
+  for (const n of news) routes.add(`${PREFIX}/news/${n.id}/`);
+  for (const c of MEDIA_CATEGORIES) routes.add(`${PREFIX}/news/category/${c.slug}/`);
   // Pages that 404 on the old site too are dropped; others link back to the original.
   const gone = new Set(report.missing.filter((m) => m.status === 404).map((m) => canonical(m.url)));
   const dead = new Set();
@@ -605,7 +635,8 @@ async function main() {
   for (const p of people) await writeJson(`people/${p.id}.json`, p);
   await writeJson('leadership.json', leadership);
   await writeJson('home.json', home);
-  await writeJson('site.json', { ...site, categories: MEDIA_CATEGORIES, source: `${ORIGIN}/ru` });
+  const categories = MEDIA_CATEGORIES.map(({ id, slug, name }) => ({ id, slug, name: name[LANG] }));
+  await writeJson('site.json', { ...site, categories, source: BASE });
 
   report.counts = {
     pages: pages.length,

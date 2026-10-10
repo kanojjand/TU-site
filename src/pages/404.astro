@@ -1,33 +1,59 @@
 ---
 import Icon from '../components/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { url } from '../lib/content';
+import { LOCALE, localize, useTranslations } from '../i18n';
+import { availableLangs, url } from '../lib/content';
 
-const links = [
-  { label: 'Поступление', href: '/enrolle/' },
-  { label: 'Институты и факультеты', href: '/faculties/' },
-  { label: 'Новости', href: '/news/' },
-  { label: 'Контакты', href: '/contacts/' },
-];
+// One page answers every missing address, so it carries all languages and shows the one
+// the address asks for (Russian when JavaScript is off).
+const blocks = availableLangs.map((lang) => {
+  const { t } = useTranslations(lang);
+  const to = (path: string) => url(localize(path, lang));
+  return {
+    lang,
+    t,
+    to,
+    links: [
+      { label: t('home.admissionEyebrow'), href: to('/enrolle/') },
+      { label: t('faculties.title'), href: to('/faculties/') },
+      { label: t('news.news'), href: to('/news/') },
+      { label: t('common.contacts'), href: to('/contacts/') },
+    ],
+  };
+});
 ---
 
-<BaseLayout title="Страница не найдена" searchable={false}>
+<BaseLayout title={blocks[0].t('notFound.title')} searchable={false}>
   <section class="not-found">
     <img class="not-found__mark" src={url('/brand/mark.svg')} alt="" aria-hidden="true" width="160" height="200" />
-    <div class="container not-found__inner">
-      <p class="eyebrow">Ошибка 404</p>
-      <h1>Такой страницы нет</h1>
-      <p class="lead">Возможно, она переехала при обновлении сайта. Попробуйте поиск или перейдите в один из разделов.</p>
-      <form class="not-found__search" action={url('/search/')} method="get" role="search">
-        <label class="visually-hidden" for="nf-q">Поиск по сайту</label>
-        <input id="nf-q" name="q" type="search" placeholder="Что вы ищете?" />
-        <button class="btn btn--primary" type="submit"><Icon name="search" size={18} /> Найти</button>
-      </form>
-      <ul class="not-found__links" role="list">
-        {links.map((link) => <li><a class="btn btn--ghost btn--sm" href={url(link.href)}>{link.label}</a></li>)}
-      </ul>
-    </div>
+    {
+      blocks.map(({ lang, t, to, links }, index) => (
+        <div class="container not-found__inner" lang={LOCALE[lang]} data-lang-block={lang} hidden={index > 0}>
+          <p class="eyebrow">{t('notFound.eyebrow')}</p>
+          <h1>{t('notFound.heading')}</h1>
+          <p class="lead">{t('notFound.lead')}</p>
+          <form class="not-found__search" action={to('/search/')} method="get" role="search">
+            <label class="visually-hidden" for={`nf-q-${lang}`}>{t('search.label')}</label>
+            <input id={`nf-q-${lang}`} name="q" type="search" placeholder={t('notFound.placeholder')} />
+            <button class="btn btn--primary" type="submit"><Icon name="search" size={18} /> {t('search.submit')}</button>
+          </form>
+          <ul class="not-found__links" role="list">
+            {links.map((link) => <li><a class="btn btn--ghost btn--sm" href={link.href}>{link.label}</a></li>)}
+          </ul>
+        </div>
+      ))
+    }
   </section>
+  <script is:inline>
+    (function () {
+      var lang = (location.pathname.match(/\/(kz|en)(?=\/|$)/) || [])[1];
+      if (!lang) return;
+      document.querySelectorAll('[data-lang-block]').forEach(function (block) {
+        block.hidden = block.dataset.langBlock !== lang;
+      });
+      document.documentElement.lang = lang === 'kz' ? 'kk' : 'en';
+    })();
+  </script>
 </BaseLayout>
 
 <style>

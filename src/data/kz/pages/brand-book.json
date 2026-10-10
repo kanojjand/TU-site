@@ -1,0 +1,12 @@
+{
+  "slug": "brand-book",
+  "title": "Brand Book",
+  "description": "",
+  "hero": {
+    "src": "/media/hero/2ff6b6ff6a812606-1600.webp",
+    "width": 1280,
+    "height": 437
+  },
+  "html": "<p>Brand-book · PDF</p> <ul class=\"links\"><li><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Ашу </a></li><li><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Жүктеп алу </a></li></ul>  <p><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf#toolbar=0&amp;view=FitH\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">Құжатты ашу (PDF)</a></p>",
+  "source": "https://tashenev.edu.kz/kz/brand-book"
+}

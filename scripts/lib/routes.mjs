@@ -3,15 +3,21 @@
 
 export const ORIGIN = 'https://tashenev.edu.kz';
 
-/** "Медиатека" sections of the old site (/ru/media/<id>) and their slugs in the new site. */
+/** Languages of the old site (/ru, /kz, /en) and the path prefix each gets in the new one; Russian stays at the root. */
+export const LANGS = { ru: '', kz: '/kz', en: '/en' };
+
+/**
+ * "Медиатека" sections of the old site (/<lang>/media/<id>) and their slugs in the new site.
+ * Names are the labels the old site puts on each item, so they also identify an item's section.
+ */
 export const MEDIA_CATEGORIES = [
-  { id: 1, slug: 'novosti', name: 'Новости' },
-  { id: 2, slug: 'obyavleniya', name: 'Объявления' },
-  { id: 3, slug: 'pozdravleniya', name: 'Поздравления' },
-  { id: 4, slug: 'fotogalereya', name: 'Фотогалерея' },
-  { id: 5, slug: 'videoteka', name: 'Видеотека' },
-  { id: 6, slug: 'smi-o-nas', name: 'СМИ о нас' },
-  { id: 7, slug: 'scopus', name: 'Статьи Scopus' },
+  { id: 1, slug: 'novosti', name: { ru: 'Новости', kz: 'Жаңалықтар', en: 'News' } },
+  { id: 2, slug: 'obyavleniya', name: { ru: 'Объявления', kz: 'Хабарландырулар', en: 'Announcements' } },
+  { id: 3, slug: 'pozdravleniya', name: { ru: 'Поздравления', kz: 'Құттықтаулар', en: 'Congratulations' } },
+  { id: 4, slug: 'fotogalereya', name: { ru: 'Фотогалерея', kz: 'Фотогалерея', en: 'Photo gallery' } },
+  { id: 5, slug: 'videoteka', name: { ru: 'Видеотека', kz: 'Видеотека', en: 'Video library' } },
+  { id: 6, slug: 'smi-o-nas', name: { ru: 'СМИ о нас', kz: 'БАҚ біз туралы', en: 'Mass media about us' } },
+  { id: 7, slug: 'scopus', name: { ru: 'Статьи Scopus', kz: 'Scopus мақалалары', en: 'Scopus articles' } },
 ];
 
 const OWN_HOSTS = new Set(['tashenev.edu.kz', 'www.tashenev.edu.kz']);
@@ -46,31 +52,41 @@ export function fileExtension(abs) {
   return match ? match[1].toLowerCase() : null;
 }
 
+/** Language of an old-site URL from its first path segment ("ru", "kz", "en"), or null. */
+export function langOf(abs) {
+  const url = new URL(abs);
+  if (!OWN_HOSTS.has(url.hostname)) return null;
+  return url.pathname.match(/^\/(ru|kz|en)(?=\/|$)/)?.[1] ?? null;
+}
+
 /**
  * Path of the matching page in the new site for an absolute URL of the old one,
- * or null when the target stays on the old site (other languages, files, external sites).
+ * or null when the target stays on the old site (files, external sites, unknown sections).
  */
 export function localPath(abs) {
   const url = new URL(abs);
   if (!OWN_HOSTS.has(url.hostname) || fileExtension(abs)) return null;
   const path = decodePath(url.pathname).replace(/\/+$/, '');
-  if (path === '' || path === '/ru') return '/';
-  if (!path.startsWith('/ru/')) return null;
+  if (path === '') return '/';
+  const lang = langOf(abs);
+  if (!lang) return null;
 
-  const rest = path.slice(4).toLowerCase();
+  const prefix = LANGS[lang];
+  const rest = path.slice(lang.length + 2).toLowerCase();
   let m;
-  if (rest === 'media') return '/news/';
-  if ((m = rest.match(/^media\/item\/(\d+)$/))) return `/news/${m[1]}/`;
+  if (rest === '') return `${prefix}/`;
+  if (rest === 'media') return `${prefix}/news/`;
+  if ((m = rest.match(/^media\/item\/(\d+)$/))) return `${prefix}/news/${m[1]}/`;
   if ((m = rest.match(/^media\/(\d+)$/))) {
     const category = MEDIA_CATEGORIES.find((c) => c.id === Number(m[1]));
-    return category ? `/news/category/${category.slug}/` : '/news/';
+    return category ? `${prefix}/news/category/${category.slug}/` : `${prefix}/news/`;
   }
-  if (rest === 'faculties') return '/faculties/';
-  if ((m = rest.match(/^faculties\/(\d+)$/))) return `/faculties/${m[1]}/`;
-  if (rest === 'departments') return '/departments/';
-  if ((m = rest.match(/^department\/(\d+)$/))) return `/departments/${m[1]}/`;
-  if (rest === 'leadership') return '/leadership/';
-  if ((m = rest.match(/^leadership-in\/(\d+)$/))) return `/leadership/${m[1]}/`;
-  if (/^[a-z0-9-]+$/.test(rest)) return `/${rest}/`;
+  if (rest === 'faculties') return `${prefix}/faculties/`;
+  if ((m = rest.match(/^faculties\/(\d+)$/))) return `${prefix}/faculties/${m[1]}/`;
+  if (rest === 'departments') return `${prefix}/departments/`;
+  if ((m = rest.match(/^department\/(\d+)$/))) return `${prefix}/departments/${m[1]}/`;
+  if (rest === 'leadership') return `${prefix}/leadership/`;
+  if ((m = rest.match(/^leadership-in\/(\d+)$/))) return `${prefix}/leadership/${m[1]}/`;
+  if (/^[a-z0-9-]+$/.test(rest)) return `${prefix}/${rest}/`;
   return null;
 }

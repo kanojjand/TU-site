@@ -1,0 +1,323 @@
+---
+import Gallery from '../../../components/Gallery.astro';
+import Icon from '../../../components/Icon.astro';
+import NewsCard from '../../../components/NewsCard.astro';
+import SourceNote from '../../../components/SourceNote.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { LOCALE, langParam, localize, useTranslations, type Lang } from '../../../i18n';
+import { availableLangs, getContent, url, withBase, type NewsItem } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.flatMap((lang) => {
+    const { news } = getContent(lang);
+    return news.map((item, index) => ({
+      params: { lang: langParam(lang), id: String(item.id) },
+      props: { lang, item, newer: news[index - 1] ?? null, older: news[index + 1] ?? null },
+    }));
+  });
+}
+
+interface Props {
+  lang: Lang;
+  item: NewsItem;
+  newer: NewsItem | null;
+  older: NewsItem | null;
+}
+
+const { lang, item, newer, older } = Astro.props;
+const { t, date } = useTranslations(lang);
+const { news, categoryName } = getContent(lang);
+const to = (path: string) => url(localize(path, lang));
+// A cover taken from the text is already shown there; one taken from the gallery is not repeated in it.
+const showCover = item.cover && item.coverSource !== 'body';
+const gallery = item.coverSource === 'gallery' ? item.gallery.slice(1) : item.gallery;
+const related = news.filter((other) => other.category === item.category && other.id !== item.id).slice(0, 3);
+const pageUrl = new URL(to(`/news/${item.id}/`), Astro.site ?? 'http://localhost').href;
+const shareText = encodeURIComponent(`${item.title} ${pageUrl}`);
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: item.title,
+  inLanguage: LOCALE[lang],
+  ...(item.date ? { datePublished: item.date } : {}),
+  ...(item.cover ? { image: [new URL(url(item.cover.src), Astro.site ?? 'http://localhost').href] } : {}),
+  publisher: { '@type': 'CollegeOrUniversity', name: t('site.name') },
+};
+---
+
+<BaseLayout title={item.title} description={item.excerpt} image={item.cover?.src} jsonLd={jsonLd}>
+  <article class="article">
+    <header class="article__head container">
+      <nav aria-label={t('common.breadcrumbs')}>
+        <ol class="article__crumbs" role="list">
+          <li><a href={to('/')}>{t('common.home')}</a></li>
+          <li><a href={to('/news/')}>{t('news.news')}</a></li>
+          {
+            item.category !== 'novosti' && (
+              <li><a href={to(`/news/category/${item.category}/`)}>{categoryName(item.category)}</a></li>
+            )
+          }
+        </ol>
+      </nav>
+      <p class="article__meta">
+        <span class="chip" data-pagefind-filter={t('news.filterName')}>{categoryName(item.category)}</span>
+        {
+          item.date && (
+            <time datetime={item.date}>
+              <Icon name="calendar" size={16} />
+              {date(item.date)}
+            </time>
+          )
+        }
+      </p>
+      <h1>{item.title}</h1>
+    </header>
+
+    {
+      showCover && item.cover && (
+        <div class="container article__cover">
+          <img
+            src={url(item.cover.src)}
+            width={item.cover.width ?? undefined}
+            height={item.cover.height ?? undefined}
+            alt=""
+            fetchpriority="high"
+            decoding="async"
+          />
+        </div>
+      )
+    }
+
+    <div class="container article__body">
+      <div>
+        {item.html ? <div class="prose" set:html={withBase(item.html)} /> : null}
+        {gallery.length > 0 && <Gallery images={gallery} title={item.title} />}
+
+        <div class="share" data-pagefind-ignore>
+          <span>{t('news.share')}</span>
+          <a class="icon-btn" href={`https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(item.title)}`} target="_blank" rel="noopener" aria-label={t('news.shareTelegram')}>
+            <Icon name="telegram" />
+          </a>
+          <a class="icon-btn" href={`https://wa.me/?text=${shareText}`} target="_blank" rel="noopener" aria-label={t('news.shareWhatsapp')}>
+            <Icon name="whatsapp" />
+          </a>
+          <button
+            class="icon-btn"
+            type="button"
+            data-copy={pageUrl}
+            data-copied={t('news.copied')}
+            data-copy-failed={t('news.copyFailed')}
+            aria-label={t('news.copy')}
+          >
+            <Icon name="link" />
+          </button>
+          <span class="share__done" role="status" data-copy-status></span>
+        </div>
+
+        <nav class="article__pager" aria-label={t('news.siblings')} data-pagefind-ignore>
+          {
+            older && (
+              <a href={to(`/news/${older.id}/`)} rel="prev">
+                <span>
+                  <Icon name="arrow-left" size={16} /> {t('news.prev')}
+                </span>
+                <strong>{older.title}</strong>
+              </a>
+            )
+          }
+          {
+            newer && (
+              <a class="is-next" href={to(`/news/${newer.id}/`)} rel="next">
+                <span>
+                  {t('news.next')} <Icon name="arrow-right" size={16} />
+                </span>
+                <strong>{newer.title}</strong>
+              </a>
+            )
+          }
+        </nav>
+        <SourceNote href={item.source} />
+      </div>
+    </div>
+  </article>
+
+  {
+    related.length > 0 && (
+      <section class="section section--mist" data-pagefind-ignore>
+        <div class="container">
+          <div class="section-head">
+            <h2>{t('news.moreIn', { category: categoryName(item.category) })}</h2>
+            <a class="link-arrow" href={to(`/news/category/${item.category}/`)}>
+              {t('news.allItems')} <Icon name="arrow-right" size={18} />
+            </a>
+          </div>
+          <div class="grid grid--3">
+            {related.map((other) => (
+              <NewsCard item={other} showExcerpt={false} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<script>
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-copy]')) {
+    button.addEventListener('click', async () => {
+      const status = document.querySelector<HTMLElement>('[data-copy-status]');
+      try {
+        await navigator.clipboard.writeText(button.dataset.copy!);
+        if (status) status.textContent = button.dataset.copied ?? '';
+      } catch {
+        if (status) status.textContent = button.dataset.copyFailed ?? '';
+      }
+      window.setTimeout(() => status && (status.textContent = ''), 2500);
+    });
+  }
+</script>
+
+<style>
+  .article__head {
+    max-width: 880px;
+    padding-top: clamp(28px, 4vw, 48px);
+  }
+
+  .article__crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .article__crumbs li:not(:last-child)::after {
+    content: '/';
+    margin-inline: 10px;
+    color: var(--line-2);
+  }
+
+  .article__crumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .article__crumbs a:hover {
+    color: var(--accent-strong);
+    text-decoration: underline;
+  }
+
+  .article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 16px;
+    margin-bottom: 18px;
+    color: var(--muted);
+  }
+
+  .article__meta time {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .article h1 {
+    font-size: var(--step-3);
+    line-height: 1.15;
+  }
+
+  .article__cover {
+    max-width: 1040px;
+    margin-top: 32px;
+  }
+
+  .article__cover img {
+    width: 100%;
+    max-height: 620px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+  }
+
+  .article__body {
+    max-width: 880px;
+    padding-block: 36px clamp(56px, 7vw, 88px);
+  }
+
+  .share {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+  }
+
+  .share span:first-child {
+    margin-right: 6px;
+    font-weight: 700;
+    color: var(--ink-2);
+  }
+
+  .share__done {
+    margin-left: 8px;
+    font-size: 0.875rem;
+    color: var(--accent-strong);
+  }
+
+  .article__pager {
+    display: grid;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  @media (min-width: 720px) {
+    .article__pager {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .article__pager a {
+    display: grid;
+    gap: 6px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    text-decoration: none;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .article__pager a:hover {
+    border-color: var(--ink);
+  }
+
+  .article__pager a.is-next {
+    text-align: right;
+    grid-column: -2;
+  }
+
+  .article__pager span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+
+  .article__pager .is-next span {
+    justify-content: flex-end;
+  }
+
+  .article__pager strong {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.35;
+  }
+</style>

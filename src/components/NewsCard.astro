@@ -1,5 +1,6 @@
 ---
-import { categoryName, formatDate, url, type NewsItem } from '../lib/content';
+import { langFromPath, localize, useTranslations } from '../i18n';
+import { getContent, url, type NewsItem } from '../lib/content';
 
 interface Props {
   item: NewsItem;
@@ -8,10 +9,13 @@ interface Props {
 }
 
 const { item, variant = 'default', showExcerpt = variant !== 'row' } = Astro.props;
+const lang = langFromPath(Astro.url.pathname);
+const { date } = useTranslations(lang);
+const { categoryName } = getContent(lang);
 ---
 
 <article class:list={['news-card', `news-card--${variant}`]}>
-  <a class="news-card__link" href={url(`/news/${item.id}/`)}>
+  <a class="news-card__link" href={url(localize(`/news/${item.id}/`, lang))}>
     <div class="news-card__media">
       {
         item.cover ? (
@@ -33,7 +37,7 @@ const { item, variant = 'default', showExcerpt = variant !== 'row' } = Astro.pro
     <div class="news-card__body">
       <p class="news-card__meta">
         <span class="chip">{categoryName(item.category)}</span>
-        {item.date && <time datetime={item.date}>{formatDate(item.date)}</time>}
+        {item.date && <time datetime={item.date}>{date(item.date)}</time>}
       </p>
       <h3 class="news-card__title">{item.title}</h3>
       {showExcerpt && item.excerpt && <p class="news-card__excerpt">{item.excerpt}</p>}
@@ -89,7 +93,7 @@ const { item, variant = 'default', showExcerpt = variant !== 'row' } = Astro.pro
     display: grid;
     place-items: center;
     height: 100%;
-    background: linear-gradient(135deg, var(--mist), #ececec);
+    background: linear-gradient(135deg, var(--mist), var(--line));
   }
 
   .news-card__placeholder img {
@@ -124,7 +128,7 @@ const { item, variant = 'default', showExcerpt = variant !== 'row' } = Astro.pro
   }
 
   .news-card__link:hover .news-card__title {
-    color: var(--red-600);
+    color: var(--accent-strong);
   }
 
   .news-card__excerpt {

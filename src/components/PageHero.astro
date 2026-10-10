@@ -1,4 +1,5 @@
 ---
+import { langFromPath, localize, useTranslations } from '../i18n';
 import { url, type Img } from '../lib/content';
 
 export interface Crumb {
@@ -15,7 +16,11 @@ interface Props {
 }
 
 const { title, description, eyebrow, crumbs = [], image } = Astro.props;
-const trail: Crumb[] = [{ label: 'Главная', href: '/' }, ...crumbs];
+const lang = langFromPath(Astro.url.pathname);
+const { t } = useTranslations(lang);
+// Crumb paths are written without the language prefix; the current language is added here.
+const href = (path: string) => url(localize(path, lang));
+const trail: Crumb[] = [{ label: t('common.home'), href: '/' }, ...crumbs];
 const site = Astro.site ?? new URL('http://localhost');
 const breadcrumbLd = {
   '@context': 'https://schema.org',
@@ -24,7 +29,7 @@ const breadcrumbLd = {
     '@type': 'ListItem',
     position: index + 1,
     name: crumb.label,
-    ...(crumb.href ? { item: new URL(url(crumb.href), site).href } : {}),
+    ...(crumb.href ? { item: new URL(href(crumb.href), site).href } : {}),
   })),
 };
 ---
@@ -33,13 +38,13 @@ const breadcrumbLd = {
   <img class="page-hero__mark" src={url('/brand/mark.svg')} alt="" aria-hidden="true" width="400" height="500" />
   <div class="container page-hero__inner">
     <div class="page-hero__text">
-      <nav aria-label="Хлебные крошки">
+      <nav aria-label={t('common.breadcrumbs')}>
         <ol class="crumbs" role="list">
           {
             trail.map((crumb, index) => (
               <li>
                 {crumb.href && index < trail.length - 1 ? (
-                  <a href={url(crumb.href)}>{crumb.label}</a>
+                  <a href={href(crumb.href)}>{crumb.label}</a>
                 ) : (
                   <span aria-current={index === trail.length - 1 ? 'page' : undefined}>{crumb.label}</span>
                 )}
@@ -133,7 +138,7 @@ const breadcrumbLd = {
   }
 
   .crumbs a:hover {
-    color: var(--red-600);
+    color: var(--accent-strong);
     text-decoration: underline;
   }
 

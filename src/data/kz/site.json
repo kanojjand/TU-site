@@ -1,0 +1,365 @@
+{
+  "menu": [
+    {
+      "title": "Университет туралы",
+      "href": null,
+      "items": [
+        {
+          "title": "Университет тарихы",
+          "href": "/kz/about/"
+        },
+        {
+          "title": "Біздің көшбасшылық",
+          "href": "/kz/leadership/"
+        },
+        {
+          "title": "Медиатека",
+          "href": "/kz/news/"
+        },
+        {
+          "title": "Университеттің құрылымы",
+          "href": "/kz/structure/"
+        },
+        {
+          "title": "Университеттің миссиясы",
+          "href": "/kz/mission/"
+        },
+        {
+          "title": "Ғылыми кеңес",
+          "href": "/kz/academic-council/"
+        },
+        {
+          "title": "Ректор блогы",
+          "href": "/kz/open-rektor/"
+        },
+        {
+          "title": "Профессор ғылыми атағына ұсыну туралы",
+          "href": "/kz/announcements/"
+        },
+        {
+          "title": "Аккредитация",
+          "href": "/kz/accreditation/"
+        },
+        {
+          "title": "Академиялық саясат",
+          "href": "/kz/academic-policy/"
+        },
+        {
+          "title": "Даму бағдарламасы",
+          "href": "/kz/development-strategy/"
+        },
+        {
+          "title": "Сапа саясаты",
+          "href": "/kz/quality-policy/"
+        },
+        {
+          "title": "Тәжірибе базалары",
+          "href": "/kz/practice-bases/"
+        },
+        {
+          "title": "Brand book",
+          "href": "/kz/brand-book/"
+        },
+        {
+          "title": "ECO-CAMPUS",
+          "href": "/kz/eco-campus/"
+        },
+        {
+          "title": "Ташенев университетіндегі тұрақты даму",
+          "href": "/kz/sustainable-development/"
+        },
+        {
+          "title": "Білім сапасы",
+          "href": "/kz/quality-edu/"
+        },
+        {
+          "title": "Университет жарғысы",
+          "href": "https://tashenev.edu.kz/docs/Academ/ustav.pdf"
+        },
+        {
+          "title": "Университеттің ПОҚ және ғылыми қызметкерлер лауазымдарына конкурстық орналасу қағидалары",
+          "href": "https://tashenev.edu.kz/docs/Academ/konkurs.pdf"
+        }
+      ]
+    },
+    {
+      "title": "Талапкер 2026",
+      "href": null,
+      "items": [
+        {
+          "title": "Үміткерлерге арналған ақпарат",
+          "href": "/kz/enrolle/"
+        },
+        {
+          "title": "Бірінші курс студенттеріне арналған ақпарат",
+          "href": "/kz/freshman/"
+        },
+        {
+          "title": "Құрылыс картасы",
+          "href": "/kz/building-map/"
+        },
+        {
+          "title": "Тәшенев тартуы",
+          "href": "https://tashenev.edu.kz/ru/media/item/227"
+        },
+        {
+          "title": "Foundation",
+          "href": "/kz/foundation/"
+        }
+      ]
+    },
+    {
+      "title": "Факультеттер",
+      "href": "/kz/faculties/",
+      "items": []
+    },
+    {
+      "title": "Студенттерге",
+      "href": null,
+      "items": [
+        {
+          "title": "Студенттерге арналған ақпарат",
+          "href": "/kz/for-student/"
+        },
+        {
+          "title": "Студент жолсілтемесі",
+          "href": "https://tashenev.edu.kz/docs/Academ/anyktama.pdf"
+        },
+        {
+          "title": "Студенттер үйі",
+          "href": "/kz/student-house/"
+        },
+        {
+          "title": "Жұмыспен қамту және мансап орталығы",
+          "href": "/kz/employment/"
+        },
+        {
+          "title": "Онлайн тіркелу",
+          "href": "/kz/online-registation/"
+        },
+        {
+          "title": "ППС үшін сервистер",
+          "href": "https://www.bagdarlama.pro/"
+        },
+        {
+          "title": "Библиотека",
+          "href": "https://library.tashenev.edu.kz/"
+        },
+        {
+          "title": "Brand shop",
+          "href": "/kz/brand-shop/"
+        },
+        {
+          "title": "Спорт",
+          "href": "/kz/sport/"
+        }
+      ]
+    },
+    {
+      "title": "Бөлімдер",
+      "href": null,
+      "items": [
+        {
+          "title": "Академиялық мәселелер жөніндегі департамент",
+          "href": "/kz/academ/"
+        },
+        {
+          "title": "Оқу процесін жоспарлау және ұйымдастыру бөлімі",
+          "href": "/kz/plan-edu/"
+        },
+        {
+          "title": "Білім беру бағдарламаларын әдістемелік қамтамасыз ету бөлімі",
+          "href": "/kz/educational-methodical-management/"
+        },
+        {
+          "title": "Білім алушыларды тіркеу және қолдау орталығы",
+          "href": "/kz/oficce-registration/"
+        },
+        {
+          "title": "Аккредиттеу және лицензиялау орталығы",
+          "href": "/kz/accreditation-licensing/"
+        },
+        {
+          "title": "Жасанды интеллект орталығы",
+          "href": "/kz/artificial-intelligence/"
+        },
+        {
+          "title": "Цифрлық даму орталығы",
+          "href": "/kz/information-technologies/"
+        },
+        {
+          "title": "Жобаларды коммерцияландыру және сүйемелдеу орталығы",
+          "href": "/kz/science-and-commercialization/"
+        },
+        {
+          "title": "Сапа менеджмент жүйесі",
+          "href": "/kz/quality-management/"
+        },
+        {
+          "title": "Жастар саясаты",
+          "href": "/kz/zhastar/"
+        },
+        {
+          "title": "Ғылым және инновация департаменті",
+          "href": "/kz/science-innovation/"
+        },
+        {
+          "title": "HR департаменті",
+          "href": "/kz/hr/"
+        },
+        {
+          "title": "Заң қызметі",
+          "href": "/kz/lawyer/"
+        },
+        {
+          "title": "Қаржы басқармасы",
+          "href": "/kz/finance/"
+        },
+        {
+          "title": "Формальді емес білім беру департаменті",
+          "href": "/kz/nonformal-education/"
+        },
+        {
+          "title": "Жоғары оқу орнынан кейінгі білім беру орталығы",
+          "href": "/kz/postgraduate-education/"
+        },
+        {
+          "title": "Ақпараттық білім беру орталығы",
+          "href": "/kz/libary/"
+        },
+        {
+          "title": "Академиялық ұтқырлық орталығы",
+          "href": "/kz/academic-mobility/"
+        },
+        {
+          "title": "Студенттік емхана",
+          "href": "/kz/medical-service/"
+        },
+        {
+          "title": "Жұмыспен қамту және мансап орталығы",
+          "href": "/kz/career-and-employment-center/"
+        },
+        {
+          "title": "Мұрағат",
+          "href": "/kz/archive/"
+        },
+        {
+          "title": "Халықаралық байланыстар департаменті",
+          "href": "/kz/international-relations/"
+        },
+        {
+          "title": "Фаундейшн және тілдік оқыту орталығы",
+          "href": "/kz/foundation-center/"
+        }
+      ]
+    },
+    {
+      "title": "Білім порталы",
+      "href": "/kz/portal/",
+      "items": []
+    },
+    {
+      "title": "e-University",
+      "href": null,
+      "items": [
+        {
+          "title": "SalemOffice құжат айналымы",
+          "href": "https://salemoffice.kz/sign-in"
+        },
+        {
+          "title": "Platonus",
+          "href": "https://platonus.tashenev.kz/v7/#/pps-main/index"
+        },
+        {
+          "title": "Онлайн тіркелу",
+          "href": "/kz/online-registation/"
+        },
+        {
+          "title": "Корпоративтік пошта",
+          "href": "https://webmail.tashenev.edu.kz/"
+        },
+        {
+          "title": "Ғылыми кітапхана",
+          "href": "https://lib.tashenev.edu.kz/"
+        },
+        {
+          "title": "Антиплагиат.ЖОО",
+          "href": "https://sirdariya.n06.antiplagiat.com/"
+        },
+        {
+          "title": "Студенттерге арналған сервис",
+          "href": "https://www.anyqtama.online/"
+        },
+        {
+          "title": "Оқытушыларға арналған сервис",
+          "href": "https://www.bagdarlama.pro/"
+        },
+        {
+          "title": "Онлайн қабылдау комиссиясы",
+          "href": "https://talapker.tashenev.edu.kz/kz"
+        },
+        {
+          "title": "Арнаулы емтихан",
+          "href": "http://91.229.151.118:7070/"
+        }
+      ]
+    }
+  ],
+  "socials": [
+    {
+      "title": "Facebook",
+      "href": "https://www.facebook.com/tashenovu?locale=ru_RU"
+    },
+    {
+      "title": "Instagram",
+      "href": "https://www.instagram.com/tashenev.university/"
+    },
+    {
+      "title": "Youtube",
+      "href": "https://www.youtube.com/channel/UCY7kWZzXvKiJSX3zDyfBZoQ"
+    }
+  ],
+  "contacts": {
+    "address": "160012, Шымкент қаласы, Қонаев даңғылы, 21",
+    "phone": "+7 (776) 104-70-70",
+    "email": "info@tashenev.edu.kz"
+  },
+  "categories": [
+    {
+      "id": 1,
+      "slug": "novosti",
+      "name": "Жаңалықтар"
+    },
+    {
+      "id": 2,
+      "slug": "obyavleniya",
+      "name": "Хабарландырулар"
+    },
+    {
+      "id": 3,
+      "slug": "pozdravleniya",
+      "name": "Құттықтаулар"
+    },
+    {
+      "id": 4,
+      "slug": "fotogalereya",
+      "name": "Фотогалерея"
+    },
+    {
+      "id": 5,
+      "slug": "videoteka",
+      "name": "Видеотека"
+    },
+    {
+      "id": 6,
+      "slug": "smi-o-nas",
+      "name": "БАҚ біз туралы"
+    },
+    {
+      "id": 7,
+      "slug": "scopus",
+      "name": "Scopus мақалалары"
+    }
+  ],
+  "source": "https://tashenev.edu.kz/kz"
+}

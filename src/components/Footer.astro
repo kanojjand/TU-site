@@ -1,8 +1,13 @@
 ---
-import { footerColumns, services } from '../config/navigation';
-import { ORIGINAL_SITE, site, url } from '../lib/content';
+import { getNavigation } from '../config/navigation';
+import { langFromPath, localize, useTranslations } from '../i18n';
+import { getContent, url } from '../lib/content';
 import Icon from './Icon.astro';
 
+const lang = langFromPath(Astro.url.pathname);
+const { t } = useTranslations(lang);
+const { footerColumns, services } = getNavigation(lang);
+const { site, originalSite } = getContent(lang);
 const { phone, email, address } = site.contacts;
 const tel = phone ? `tel:${phone.replace(/[^\d+]/g, '')}` : null;
 const year = new Date().getFullYear();
@@ -22,10 +27,10 @@ const socials = site.socials.filter((s, i, all) => all.findIndex((other) => soci
 <footer class="footer">
   <div class="container footer__grid">
     <div class="footer__brand">
-      <a href={url('/')} class="footer__logo">
+      <a href={url(localize('/', lang))} class="footer__logo">
         <img src={url('/brand/logo-white.svg')} alt="Tashenev University" width="187" height="60" loading="lazy" />
       </a>
-      <p>Университет имени Жумабека Ахметулы Ташенева. Готовим специалистов с 1998 года.</p>
+      <p>{t('site.about')}</p>
       <div class="footer__social">
         {
           socials.map((social) => (
@@ -53,13 +58,13 @@ const socials = site.socials.filter((s, i, all) => all.findIndex((other) => soci
     }
 
     <div class="footer__col">
-      <p class="footer__title">Контакты</p>
+      <p class="footer__title">{t('common.contacts')}</p>
       <ul role="list" class="footer__contacts">
         {address && <li><Icon name="pin" size={18} /><span>{address}</span></li>}
         {phone && <li><Icon name="phone" size={18} /><a href={tel}>{phone}</a></li>}
         {email && <li><Icon name="mail" size={18} /><a href={`mailto:${email}`}>{email}</a></li>}
       </ul>
-      <a class="btn btn--outline-light btn--sm footer__contacts-btn" href={url('/contacts/')}>Все контакты</a>
+      <a class="btn btn--outline-light btn--sm footer__contacts-btn" href={url(localize('/contacts/', lang))}>{t('common.allContacts')}</a>
     </div>
   </div>
 
@@ -81,11 +86,11 @@ const socials = site.socials.filter((s, i, all) => all.findIndex((other) => soci
   }
 
   <div class="container footer__bottom">
-    <p>© 1998–{year} Университет имени Ж. А. Ташенева</p>
+    <p>© 1998–{year} {t('site.name')}</p>
     <p>
-      <a href={url('/sitemap/')}>Карта сайта</a>
+      <a href={url(localize('/sitemap/', lang))}>{t('footer.sitemap')}</a>
       <span aria-hidden="true">·</span>
-      <a href={ORIGINAL_SITE} target="_blank" rel="noopener">Источник контента: tashenev.edu.kz</a>
+      <a href={originalSite} target="_blank" rel="noopener">{t('footer.source')}</a>
     </p>
   </div>
 </footer>
@@ -185,7 +190,7 @@ const socials = site.socials.filter((s, i, all) => all.findIndex((other) => soci
   .footer__contacts :global(.icon) {
     flex: none;
     margin-top: 3px;
-    color: var(--red);
+    color: var(--accent);
   }
 
   .footer__contacts-btn {

@@ -1,0 +1,147 @@
+---
+// News listings: /news/, /news/page/2/, /news/category/<slug>/, /news/category/<slug>/page/2/
+import NewsCard from '../../../components/NewsCard.astro';
+import PageHero from '../../../components/PageHero.astro';
+import Pagination from '../../../components/Pagination.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { langParam, localize, useTranslations, type Lang } from '../../../i18n';
+import { availableLangs, getContent, url, type Category, type NewsItem } from '../../../lib/content';
+
+export function getStaticPaths() {
+  // getStaticPaths runs in isolation, so its constants must live inside it.
+  const PER_PAGE = 24;
+  const paths: { params: { lang: string | undefined; path: string | undefined }; props: Record<string, unknown> }[] = [];
+  for (const lang of availableLangs) {
+    const { categories, news } = getContent(lang);
+    const add = (items: NewsItem[], prefix: string, category: Category | null) => {
+      const total = Math.max(1, Math.ceil(items.length / PER_PAGE));
+      for (let page = 1; page <= total; page++) {
+        const path = [prefix, page > 1 ? `page/${page}` : ''].filter(Boolean).join('/');
+        paths.push({
+          params: { lang: langParam(lang), path: path || undefined },
+          props: { lang, items: items.slice((page - 1) * PER_PAGE, page * PER_PAGE), page, total, category, count: items.length },
+        });
+      }
+    };
+    add(news, '', null);
+    for (const category of categories) {
+      const items = news.filter((item) => item.category === category.slug);
+      if (items.length) add(items, `category/${category.slug}`, category);
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  lang: Lang;
+  items: NewsItem[];
+  page: number;
+  total: number;
+  category: Category | null;
+  count: number;
+}
+
+const { lang, items, page, total, category, count } = Astro.props;
+const { t, plural } = useTranslations(lang);
+const { categories, news } = getContent(lang);
+const base = localize(category ? `/news/category/${category.slug}/` : '/news/', lang);
+const counts = new Map(categories.map((c) => [c.slug, news.filter((item) => item.category === c.slug).length]));
+const title = category ? category.name : t('news.title');
+const pageSuffix = page > 1 ? t('news.pageSuffix', { n: page }) : '';
+---
+
+<BaseLayout
+  title={`${title}${pageSuffix}`}
+  description={category ? t('news.categoryDescription', { category: category.name }) : t('news.description')}
+  searchable={false}
+>
+  <PageHero
+    title={title}
+    eyebrow={t('news.media')}
+    crumbs={category ? [{ label: t('news.news'), href: '/news/' }, { label: category.name }] : [{ label: t('news.news') }]}
+  >
+    <p class="news-count">{plural(count, 'items')}</p>
+  </PageHero>
+
+  <div class="container news-page">
+    <nav class="filters" aria-label={t('news.filters')}>
+      <a href={url(localize('/news/', lang))} aria-current={!category ? 'page' : undefined}>{t('news.all')} <span>{news.length}</span></a>
+      {
+        categories
+          .filter((c) => counts.get(c.slug))
+          .map((c) => (
+            <a href={url(localize(`/news/category/${c.slug}/`, lang))} aria-current={category?.slug === c.slug ? 'page' : undefined}>
+              {c.name} <span>{counts.get(c.slug)}</span>
+            </a>
+          ))
+      }
+    </nav>
+
+    <div class="grid grid--3">
+      {items.map((item) => <NewsCard item={item} />)}
+    </div>
+
+    <Pagination page={page} total={total} base={base} />
+  </div>
+</BaseLayout>
+
+<style>
+  .news-count {
+    margin-top: 12px;
+    color: var(--muted);
+  }
+
+  .news-page {
+    padding-block: 32px clamp(56px, 7vw, 96px);
+  }
+
+  .filters {
+    display: flex;
+    gap: 8px;
+    margin: 0 calc(-1 * var(--gutter)) 32px;
+    padding: 4px var(--gutter) 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .filters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .filters a {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding-inline: 16px;
+    border: 1px solid var(--line-2);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--ink-2);
+    text-decoration: none;
+    transition:
+      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease);
+  }
+
+  .filters a:hover {
+    border-color: var(--ink);
+  }
+
+  .filters a span {
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .filters a[aria-current='page'] {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .filters a[aria-current='page'] span {
+    color: color-mix(in srgb, var(--paper) 70%, transparent);
+  }
+</style>

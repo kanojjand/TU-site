@@ -1,0 +1,44 @@
+{
+  "id": 9,
+  "title": "Қазақ филологиясы және әдебиет орталығы",
+  "hero": {
+    "src": "/media/hero/668f52a1838aa35e-1600.webp",
+    "width": 1280,
+    "height": 437
+  },
+  "html": "<h2> Факультеттің сипаттамасы </h2>",
+  "head": {
+    "role": "Факультет жетекшісі",
+    "name": "Мамыт Амангелді Алтыбайұлы",
+    "photo": {
+      "src": "/media/person/f0a9942a2720c6ac-480.webp",
+      "width": 300,
+      "height": 356
+    },
+    "bio": "<p>тарих ғылымдарының кандидаты, доцент </p>",
+    "contacts": [
+      {
+        "label": "Телефон",
+        "value": "+7 702 596 6830",
+        "href": "tel:+77025966830"
+      },
+      {
+        "label": "E-mail",
+        "value": "info@tashenev.edu.kz",
+        "href": "mailto:info@tashenev.edu.kz"
+      }
+    ]
+  },
+  "departments": [
+    {
+      "id": 22,
+      "name": "Қазақ тілі мен әдебиетІ"
+    },
+    {
+      "id": 27,
+      "name": "Абайтану ғылыми-зерттеу орталығы"
+    }
+  ],
+  "source": "https://tashenev.edu.kz/kz/faculties/9",
+  "name": "Қазақ филологиясы және әдебиет орталығы"
+}

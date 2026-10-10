@@ -1,0 +1,12 @@
+{
+  "slug": "online-registation",
+  "title": "Онлайн тіркеу",
+  "description": "Университеттің ресурстары мен сервистерін пайдалануға электрондық тіркеу",
+  "hero": {
+    "src": "/media/hero/a87283d26144473d-1600.webp",
+    "width": 1274,
+    "height": 478
+  },
+  "html": "<ul class=\"links\"><li><a href=\"https://forms.gle/TyPr2bpTC5roMp6b8\" target=\"_blank\" rel=\"noopener\">  Спорт нысандарына баруға тіркелу </a></li><li><a href=\"https://docs.google.com/forms/d/e/1FAIpQLScW9iQeufMg-2nsa1YyS0LzjPcimBWAxPsylzSDO-GOqi60WA/viewform\" target=\"_blank\" rel=\"noopener\">  Кітапханаға бару үшін тіркелу </a></li><li><a href=\"https://docs.google.com/forms/d/e/1FAIpQLSdd8X6Dg4uIa0Lai5fS-LIUCxmBtTm4-ox_r_5iBkteXI8ncQ/viewform\" target=\"_blank\" rel=\"noopener\">  Студенттер үйінде тұруға тіркелу </a></li><li><a href=\"https://docs.google.com/forms/d/e/1FAIpQLSfcRaSL1yEhkGL3jua361tNrxCWWMQHAaE85nJlhepsBjsSBA/viewform\" target=\"_blank\" rel=\"noopener\">  Ағындарға (курстарға) тіркелу </a></li><li><a href=\"https://napriem.com/libsirdariya\" target=\"_blank\" rel=\"noopener\">  Жазу және кітапханаға бару кестесі </a></li><li><a href=\"https://docs.google.com/forms/d/e/1FAIpQLSfS315ZV1AXYV-dxiYlFCYQNvuG4kPKwMT01TunadhADx6b6Q/viewform\" target=\"_blank\" rel=\"noopener\">  Түлектер қауымдастығына кіру үшін тіркелу </a></li></ul>",
+  "source": "https://tashenev.edu.kz/kz/online-registation"
+}

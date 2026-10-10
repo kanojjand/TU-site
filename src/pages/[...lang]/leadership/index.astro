@@ -1,0 +1,70 @@
+---
+import PageHero from '../../../components/PageHero.astro';
+import PersonCard from '../../../components/PersonCard.astro';
+import SectionNav from '../../../components/SectionNav.astro';
+import SourceNote from '../../../components/SourceNote.astro';
+import { getNavigation } from '../../../config/navigation';
+import { langParam, localize, useTranslations, type Lang } from '../../../i18n';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { availableLangs, getContent, withBase } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.map((lang) => ({ params: { lang: langParam(lang) }, props: { lang } }));
+}
+
+const { lang } = Astro.props as { lang: Lang };
+const { t } = useTranslations(lang);
+const { leadership, pageBySlug, people } = getContent(lang);
+const page = pageBySlug.get('leadership');
+const section = getNavigation(lang).sectionFor(localize('/leadership/', lang));
+const withProfile = new Set(people.map((person) => person.id));
+---
+
+<BaseLayout title={page?.title || t('leadership.title')} description={t('leadership.description')}>
+  <PageHero
+    title={page?.title || t('leadership.ours')}
+    description={page?.description}
+    image={page?.hero}
+    crumbs={[{ label: t('site.university') }, { label: t('leadership.title') }]}
+  />
+  <div class:list={['container page-body', { 'has-aside': section }]}>
+    <div>
+      {
+        leadership.groups.length ? (
+          leadership.groups.map((group) => (
+            <section class="group">
+              {group.title && <h2>{group.title}</h2>}
+              <div class="grid grid--3">
+                {group.people.map((person) => (
+                  <PersonCard
+                    name={person.name}
+                    role={group.title}
+                    photo={person.photo}
+                    summary={person.summary}
+                    contacts={person.email ? [{ label: 'E-mail', value: person.email, href: `mailto:${person.email}` }] : []}
+                    href={person.id && withProfile.has(person.id) ? localize(`/leadership/${person.id}/`, lang) : null}
+                  />
+                ))}
+              </div>
+            </section>
+          ))
+        ) : (
+          page?.html && <div class="prose" set:html={withBase(page.html)} />
+        )
+      }
+      {page && <SourceNote href={page.source} />}
+    </div>
+    {section && <SectionNav section={section} />}
+  </div>
+</BaseLayout>
+
+<style>
+  .group + .group {
+    margin-top: clamp(40px, 5vw, 56px);
+  }
+
+  .group h2 {
+    margin-bottom: 20px;
+    font-size: var(--step-2);
+  }
+</style>

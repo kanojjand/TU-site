@@ -1,0 +1,12 @@
+{
+  "slug": "student-works",
+  "title": "Үздік студент жұмыстары",
+  "description": "",
+  "hero": {
+    "src": "/media/hero/4c493b44d9f7992f-1600.webp",
+    "width": 1280,
+    "height": 437
+  },
+  "html": "<h2>Ең үздік студенттік жұмыстар</h2>            <p>📄</p>  <h5>Білім беру саласындағы ЖИ</h5><p> <small>Диплом • Студент • 2024</small>   </p><p>PDF • 1.2MB Жүктеу</p>        <p>📄</p>  <h5>Мәліметтер базасы</h5><p> <small>Курстық жұмыс • Студент • 2023</small>   </p><p>DOCX • 860KB Жүктеу</p>        <p>📄</p>  <h5>Тәжірибе есебі</h5><p> <small>Есеп • Студент • 2024</small>   </p><p>PDF • 1.7MB Жүктеу</p>",
+  "source": "https://tashenev.edu.kz/kz/student-works"
+}

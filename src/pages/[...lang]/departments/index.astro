@@ -1,0 +1,121 @@
+---
+import Icon from '../../../components/Icon.astro';
+import PageHero from '../../../components/PageHero.astro';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { langParam, localize, useTranslations, type Lang } from '../../../i18n';
+import { availableLangs, getContent, url } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return availableLangs.map((lang) => ({ params: { lang: langParam(lang) }, props: { lang } }));
+}
+
+const { lang } = Astro.props as { lang: Lang };
+const { t } = useTranslations(lang);
+const { departments, faculties } = getContent(lang);
+const to = (path: string) => url(localize(path, lang));
+const groups = [
+  ...faculties.map((faculty) => ({
+    title: faculty.name,
+    href: `/faculties/${faculty.id}/`,
+    items: departments.filter((department) => department.facultyId === faculty.id),
+  })),
+  { title: t('departments.other'), href: null, items: departments.filter((department) => department.facultyId === null) },
+].filter((group) => group.items.length > 0);
+---
+
+<BaseLayout title={t('departments.title')} description={t('departments.description')}>
+  <PageHero
+    title={t('departments.title')}
+    description={t('departments.lead')}
+    eyebrow={t('faculties.study')}
+    crumbs={[{ label: t('faculties.title'), href: '/faculties/' }, { label: t('departments.title') }]}
+  />
+  <div class="container departments">
+    {
+      groups.map((group) => (
+        <section class="group">
+          <h2>{group.href ? <a href={to(group.href)}>{group.title}</a> : group.title}</h2>
+          <ul class="group__list" role="list">
+            {group.items.map((department) => (
+              <li>
+                <a href={to(`/departments/${department.id}/`)}>
+                  <span>
+                    <strong>{department.name}</strong>
+                    {department.head && <small>{department.head.name}</small>}
+                  </span>
+                  <Icon name="arrow-right" size={20} />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .departments {
+    display: grid;
+    gap: clamp(36px, 5vw, 56px);
+    padding-block: clamp(40px, 5vw, 64px) clamp(56px, 7vw, 96px);
+  }
+
+  .group h2 {
+    margin-bottom: 16px;
+    font-size: var(--step-2);
+  }
+
+  .group h2 a {
+    text-decoration: none;
+  }
+
+  .group h2 a:hover {
+    color: var(--accent-strong);
+  }
+
+  .group__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .group__list a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    height: 100%;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    color: var(--ink);
+    text-decoration: none;
+    transition:
+      border-color 0.2s var(--ease),
+      box-shadow 0.2s var(--ease);
+  }
+
+  .group__list a:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow);
+  }
+
+  .group__list span {
+    display: grid;
+    gap: 4px;
+  }
+
+  .group__list small {
+    font-size: 0.9063rem;
+    color: var(--muted);
+  }
+
+  .group__list :global(.icon) {
+    flex: none;
+    color: var(--accent);
+  }
+</style>

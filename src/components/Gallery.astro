@@ -1,6 +1,7 @@
 ---
 // News photo gallery. Photos stay on the university server (thousands of them),
 // so only the first few load until the visitor asks for more.
+import { langFromPath, useTranslations } from '../i18n';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -9,19 +10,20 @@ interface Props {
 }
 
 const { images, title } = Astro.props;
+const { t } = useTranslations(langFromPath(Astro.url.pathname));
 const VISIBLE = 6;
 ---
 
 <section class="gallery" aria-labelledby="gallery-title" data-gallery>
   <h2 id="gallery-title" class="gallery__title">
-    <Icon name="image" size={22} /> Фотографии <span>{images.length}</span>
+    <Icon name="image" size={22} /> {t('gallery.title')} <span>{images.length}</span>
   </h2>
   <ul class="gallery__grid" role="list">
     {
       images.map((src, index) => (
         <li hidden={index >= VISIBLE}>
           <a href={src} data-index={index} data-gallery-item>
-            <img src={src} alt={`Фото ${index + 1} из ${images.length}: ${title}`} loading="lazy" decoding="async" />
+            <img src={src} alt={t('gallery.alt', { n: index + 1, total: images.length, title })} loading="lazy" decoding="async" />
           </a>
         </li>
       ))
@@ -30,21 +32,21 @@ const VISIBLE = 6;
   {
     images.length > VISIBLE && (
       <button class="btn btn--ghost gallery__more" type="button" data-gallery-more>
-        Показать все фото ({images.length})
+        {t('gallery.more', { total: images.length })}
       </button>
     )
   }
 
-  <dialog class="lightbox" aria-label="Просмотр фотографии" data-lightbox>
+  <dialog class="lightbox" aria-label={t('gallery.viewer')} data-lightbox>
     <img class="lightbox__img" src="" alt="" data-lightbox-img />
     <p class="lightbox__counter" data-lightbox-counter></p>
-    <button class="lightbox__btn lightbox__close" type="button" aria-label="Закрыть" data-lightbox-close>
+    <button class="lightbox__btn lightbox__close" type="button" aria-label={t('gallery.close')} data-lightbox-close>
       <Icon name="close" size={26} />
     </button>
-    <button class="lightbox__btn lightbox__prev" type="button" aria-label="Предыдущее фото" data-lightbox-prev>
+    <button class="lightbox__btn lightbox__prev" type="button" aria-label={t('gallery.prev')} data-lightbox-prev>
       <Icon name="chevron-left" size={30} />
     </button>
-    <button class="lightbox__btn lightbox__next" type="button" aria-label="Следующее фото" data-lightbox-next>
+    <button class="lightbox__btn lightbox__next" type="button" aria-label={t('gallery.next')} data-lightbox-next>
       <Icon name="chevron-right" size={30} />
     </button>
   </dialog>

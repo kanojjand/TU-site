@@ -5,7 +5,8 @@ import '@fontsource/pt-sans/700.css';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
-import { url } from '../lib/content';
+import { LOCALE, OG_LOCALE, langFromPath, useTranslations } from '../i18n';
+import { languageLinks, sitePath, url } from '../lib/content';
 
 interface Props {
   title: string;
@@ -18,31 +19,54 @@ interface Props {
 }
 
 const { title, description = '', image = null, searchable = true, jsonLd = null } = Astro.props;
-const SITE_NAME = 'Университет имени Ж. А. Ташенева';
+const lang = langFromPath(Astro.url.pathname);
+const { t } = useTranslations(lang);
+const SITE_NAME = t('site.name');
 const fullTitle = title === SITE_NAME ? title : `${title} — ${SITE_NAME}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = new URL(url(image ?? '/brand/og.png'), Astro.site).href;
+// Translations of this page, so search engines show each visitor their language.
+const translations = languageLinks(sitePath(Astro.url.pathname)).filter((link) => link.exists);
+const absolute = (path: string) => new URL(url(path), Astro.site).href;
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang={LOCALE[lang]}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
     <script is:inline>
-      // Low-vision mode chosen in the header; applied before first paint so the page does not jump.
-      try {
-        if (localStorage.getItem('vision') === 'low') document.documentElement.dataset.vision = 'low';
-      } catch {}
+      // Theme and low-vision mode chosen in the header, applied before first paint so the page
+      // does not flash. Without a saved choice the theme follows the system setting.
+      (function () {
+        var root = document.documentElement;
+        var saved = {};
+        try {
+          saved = { theme: localStorage.getItem('theme'), vision: localStorage.getItem('vision') };
+        } catch (error) {}
+        if (saved.vision === 'low') root.dataset.vision = 'low';
+        root.dataset.theme = saved.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        if (root.dataset.theme === 'dark') document.querySelector('meta[name="theme-color"]').content = '#141414';
+      })();
     </script>
     <title>{fullTitle}</title>
     {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href={url('/favicon.svg')} type="image/svg+xml" />
     <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
-    <meta name="theme-color" content="#ffffff" />
+    {
+      translations.length > 1 &&
+        translations.map((link) => <link rel="alternate" hreflang={LOCALE[link.lang]} href={absolute(link.path)} />)
+    }
+    {
+      translations.length > 1 && translations[0].lang === 'ru' && (
+        <link rel="alternate" hreflang="x-default" href={absolute(translations[0].path)} />
+      )
+    }
     <meta property="og:type" content="website" />
-    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:locale" content={OG_LOCALE[lang]} />
+    {translations.filter((link) => link.lang !== lang).map((link) => <meta property="og:locale:alternate" content={OG_LOCALE[link.lang]} />)}
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
@@ -52,7 +76,7 @@ const ogImage = new URL(url(image ?? '/brand/og.png'), Astro.site).href;
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
   </head>
   <body>
-    <a class="skip-link" href="#main">Перейти к содержанию</a>
+    <a class="skip-link" href="#main">{t('site.skip')}</a>
     <Header />
     <main id="main" tabindex="-1" data-pagefind-body={searchable ? '' : undefined}>
       <slot />

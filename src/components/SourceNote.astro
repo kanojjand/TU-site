@@ -1,5 +1,6 @@
 ---
 // Link back to the page the content was migrated from, so editors can compare.
+import { langFromPath, useTranslations } from '../i18n';
 import Icon from './Icon.astro';
 
 interface Props {
@@ -7,11 +8,12 @@ interface Props {
 }
 
 const { href } = Astro.props;
+const { t } = useTranslations(langFromPath(Astro.url.pathname));
 ---
 
 <p class="source-note">
   <Icon name="link" size={16} />
-  Материал перенесён с <a href={href} target="_blank" rel="noopener">{href.replace(/^https?:\/\//, '')}</a>
+  {t('common.source')} <a href={href} target="_blank" rel="noopener">{href.replace(/^https?:\/\//, '')}</a>
 </p>
 
 <style>

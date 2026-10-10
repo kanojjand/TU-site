@@ -3,7 +3,9 @@
 // the new templates can style consistently.
 import * as cheerio from 'cheerio';
 import { localImage } from './images.mjs';
-import { absolute, fileExtension, isOwn, localPath } from './routes.mjs';
+import { absolute, fileExtension, isOwn, langOf, localPath } from './routes.mjs';
+
+const OPEN_PDF = { ru: 'Открыть документ (PDF)', kz: 'Құжатты ашу (PDF)', en: 'Open the document (PDF)' };
 
 const KEEP = new Set([
   'p', 'br', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'dl', 'dt', 'dd',
@@ -110,7 +112,7 @@ function pdfEmbedsToLinks($, root, base) {
     const $el = $(el);
     const src = absolute($el.attr('src') || $el.attr('data'), base);
     if (!src || fileExtension(src) !== 'pdf') return;
-    $el.replaceWith(`<p><a href="${src}">Открыть документ (PDF)</a></p>`);
+    $el.replaceWith(`<p><a href="${src}">${OPEN_PDF[langOf(base) ?? 'ru']}</a></p>`);
   });
 }
 

@@ -6,6 +6,8 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { faculties, formatDate, hasRoute, home, news, plural, site, url } from '../lib/content';
 
 const welcome = home.slides[0];
+// The old slide repeats the university name before the slogan; the h1 already says it.
+const slogan = welcome?.text.replace(/^Университет имени[^.]*\.\s*/, '') || 'Будущее прогресса и возможностей начинается с нас!';
 const admission = home.slides.find((slide) => /при[её]м/i.test(slide.title));
 const founded = home.slides.find((slide) => /основан/i.test(slide.title));
 const photos = home.slides.filter((slide) => slide.image).map((slide) => slide.image!);
@@ -81,7 +83,7 @@ const jsonLd = {
       <div class="hero__text">
         <p class="eyebrow">Шымкент · с 1998 года</p>
         <h1>Университет имени Жумабека Ташенева</h1>
-        <p class="lead hero__lead">{welcome?.text || 'Будущее прогресса и возможностей начинается с нас!'}</p>
+        <p class="lead hero__lead">{slogan}</p>
         <div class="hero__actions">
           <a class="btn btn--primary" href={url('/enrolle/')}>Поступление 2026 <Icon name="arrow-right" size={18} /></a>
           <a class="btn btn--ghost" href={url('/faculties/')}>Институты и программы</a>

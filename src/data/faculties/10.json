@@ -1,0 +1,44 @@
+{
+  "id": 10,
+  "title": "Естественных наук",
+  "hero": {
+    "src": "/media/hero/ca0af0d899f2f4ea-1600.webp",
+    "width": 44,
+    "height": 44
+  },
+  "html": "<h2> Описание </h2>",
+  "head": {
+    "role": "Руководитель факультета",
+    "name": "Муминова Шолпан Самандаровна",
+    "photo": {
+      "src": "/media/person/0b627e9af63978f0-480.webp",
+      "width": 300,
+      "height": 433
+    },
+    "bio": "<p>заведующая кафедрой \"Химия и биология\"</p>",
+    "contacts": [
+      {
+        "label": "Телефон",
+        "value": "87752757773",
+        "href": "tel:87752757773"
+      },
+      {
+        "label": "E-mail",
+        "value": "k-him-bio@tashenev.edu.kz",
+        "href": "mailto:k-him-bio@tashenev.edu.kz"
+      }
+    ]
+  },
+  "departments": [
+    {
+      "id": 9,
+      "name": "Математики и физики"
+    },
+    {
+      "id": 21,
+      "name": "Химии и биология"
+    }
+  ],
+  "source": "https://tashenev.edu.kz/ru/faculties/10",
+  "name": "Естественных наук"
+}

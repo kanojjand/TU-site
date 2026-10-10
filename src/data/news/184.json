@@ -1,0 +1,23 @@
+{
+  "id": 184,
+  "title": "GUEST SPEAKER",
+  "date": "2022-04-28",
+  "rawDate": "2022-04-28",
+  "category": "novosti",
+  "cover": {
+    "src": "/media/card/a8077d7fbbcd0136-800.webp",
+    "width": 800,
+    "height": 160
+  },
+  "coverSource": "hero",
+  "excerpt": "Сегодня на очередной площадке свободной дискуссии на тему «Светлый путь будущего учителя» выпускник Университета «Сырдария», учитель казахского языка и литературы специализированного лицея №39 имени С.А.Ходжикова…",
+  "html": "<p>Сегодня на очередной площадке свободной дискуссии на тему «Светлый путь будущего учителя» выпускник Университета «Сырдария», учитель казахского языка и литературы специализированного лицея №39 имени С.А.Ходжикова, главный редактор республиканского информационно-методического журнала «Мезет», обладатель международных званий «Лучший учитель-2015», «Лучший учитель-2020», «Учитель год в Алматы-2021\" Аманов Нуржигит Бердибекович поделился своими мыслями со студентами вуза и молодежью Жетысая.</p>",
+  "gallery": [
+    "https://tashenev.edu.kz/storage/news/April2022/y6m7CqqIFbI2TWmgFN7R.jpg",
+    "https://tashenev.edu.kz/storage/news/April2022/9FDXmlTZ3TueXVz3YknO.jpg",
+    "https://tashenev.edu.kz/storage/news/April2022/RYouki1bfkL6cTkn5pix.jpg",
+    "https://tashenev.edu.kz/storage/news/April2022/fAjBccIZwpypNQMAuU63.jpg",
+    "https://tashenev.edu.kz/storage/news/April2022/uKAAyjj9a9HrOl24ecW0.jpg"
+  ],
+  "source": "https://tashenev.edu.kz/ru/media/item/184"
+}

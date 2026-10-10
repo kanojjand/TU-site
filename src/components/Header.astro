@@ -19,10 +19,15 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
       {phone && <a href={tel}><Icon name="phone" size={16} />{phone}</a>}
       {email && <a href={`mailto:${email}`}><Icon name="mail" size={16} />{email}</a>}
     </div>
-    <nav class="topbar__links" aria-label="Сервисы">
-      {services.slice(0, 4).map((service) => <a href={service.href} {...linkAttrs(service.href)}>{service.label}</a>)}
-      <a href={url('/contacts/')}>Контакты</a>
-    </nav>
+    <div class="topbar__end">
+      <nav class="topbar__links" aria-label="Сервисы">
+        {services.slice(0, 4).map((service) => <a href={service.href} {...linkAttrs(service.href)}>{service.label}</a>)}
+        <a href={url('/contacts/')}>Контакты</a>
+      </nav>
+      <button class="topbar__vision" type="button" data-vision-toggle>
+        <Icon name="eye" size={16} /><span data-vision-label>Версия для слабовидящих</span>
+      </button>
+    </div>
   </div>
 </div>
 
@@ -177,6 +182,9 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
           {services[0].label}
         </a>
       )}
+      <button class="btn btn--ghost btn--block" type="button" data-vision-toggle>
+        <Icon name="eye" size={20} /><span data-vision-label>Версия для слабовидящих</span>
+      </button>
     </div>
     <div class="drawer__contacts">
       {phone && <a href={tel}><Icon name="phone" size={18} />{phone}</a>}
@@ -271,6 +279,34 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
   window.matchMedia('(min-width: 1200px)').addEventListener('change', (event) => {
     if (event.matches && !drawer.hidden) toggleDrawer(false);
   });
+
+  // Low-vision mode: BaseLayout applies the saved choice before first paint; the buttons switch it.
+  const root = document.documentElement;
+  const visionToggles = [...document.querySelectorAll<HTMLButtonElement>('[data-vision-toggle]')];
+
+  function syncVision() {
+    const label = root.dataset.vision === 'low' ? 'Обычная версия' : 'Версия для слабовидящих';
+    for (const toggle of visionToggles) {
+      toggle.querySelector('[data-vision-label]')!.textContent = label;
+      toggle.title = label;
+    }
+  }
+
+  for (const toggle of visionToggles) {
+    toggle.addEventListener('click', () => {
+      const low = root.dataset.vision !== 'low';
+      if (low) root.dataset.vision = 'low';
+      else delete root.dataset.vision;
+      try {
+        if (low) localStorage.setItem('vision', 'low');
+        else localStorage.removeItem('vision');
+      } catch {
+        // Storage blocked (private mode): the choice lasts until the page is left.
+      }
+      syncVision();
+    });
+  }
+  syncVision();
 </script>
 
 <style>
@@ -306,6 +342,51 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
     display: flex;
     flex-wrap: wrap;
     gap: 8px 24px;
+  }
+
+  .topbar__end {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .topbar__vision {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: #fff;
+    font-size: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+    min-height: 32px;
+    cursor: pointer;
+  }
+
+  /* Narrower desktops: the eye alone (its label stays for screen readers and as a tooltip)... */
+  @media (max-width: 1365px) {
+    :global(html:not([data-vision='low'])) .topbar__vision span {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+
+  /* ...and no e-mail, which the footer and the contacts page still show. */
+  @media (max-width: 1199px) {
+    .topbar__contacts a[href^='mailto:'] {
+      display: none;
+    }
+  }
+
+  /* Larger text leaves no room for the service links here; they stay in the footer and the menu. */
+  :global(html[data-vision='low']) .topbar__links {
+    display: none;
   }
 
   @media (max-width: 1023px) {
@@ -420,6 +501,21 @@ const isCurrentSection = (section: (typeof navigation)[number]) =>
 
     .header__burger {
       display: none;
+    }
+  }
+
+  /* Low-vision text is 25% larger, so the full menu only fits on wide screens; below that keep the drawer. */
+  @media (min-width: 1200px) and (max-width: 1679px) {
+    :global(html[data-vision='low']) .nav {
+      display: none;
+    }
+
+    :global(html[data-vision='low']) .header__actions {
+      margin-left: auto;
+    }
+
+    :global(html[data-vision='low']) .header__burger {
+      display: inline-grid;
     }
   }
 

@@ -76,11 +76,16 @@ async function readHero($, base, preset = 'hero') {
 }
 
 /** Drop the first heading or paragraph of the body when it just repeats the page title. */
+// A date at the end of a title: "… 17.09.2026г", "… 03.02.2026 ж.", sometimes with a Latin "r".
+const TRAILING_DATE = /\s*\d{1,2}\.\d{1,2}\.\d{2,4}\s*(?:г|ж|r)?\.?\s*$/i;
+
 function withoutLeadingTitle(html, title) {
   const $ = cheerio.load(html, null, false);
   const $first = $.root().children().first();
-  const normalize = (text) => squash(text).toLowerCase().replace(/[.!\s]+$/, '');
-  if ($first.is('h2, h3, h4, p') && normalize($first.text()) === normalize(title)) $first.remove();
+  // Same words in the same order: spacing, punctuation and a trailing date do not count.
+  const normalize = (text) => squash(text).replace(TRAILING_DATE, '').toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '');
+  const key = normalize(title);
+  if (key && $first.is('h2, h3, h4, p') && normalize($first.text()) === key) $first.remove();
   return ($.root().html() || '').trim();
 }
 
@@ -216,6 +221,12 @@ async function scrapePerson(id, url, $) {
   };
 }
 
+/** Drop a trailing "17.09.2026г" (the card shows the date) unless the title is little more than that date. */
+function withoutTrailingDate(title) {
+  const trimmed = title.replace(TRAILING_DATE, '').trim();
+  return trimmed.split(/\s+/).length >= 3 ? trimmed : title;
+}
+
 async function scrapeNewsItem(id, url, $, meta) {
   const $hero = $('main .title_img__wrap').first();
   const heroTitle = squash($hero.find('.title_img__name').text());
@@ -228,8 +239,9 @@ async function scrapeNewsItem(id, url, $, meta) {
   });
   const $body = ($section.find('.text_p').first().length ? $section.find('.text_p').first() : $section).clone();
   $body.find('.imgsBlockInNewItem').remove();
-  const title = heroTitle || meta.title || `Новость №${id}`;
-  const html = withoutLeadingTitle(await cleanHtml($body.html() || '', { base: url }), title);
+  const fullTitle = heroTitle || meta.title || `Новость №${id}`;
+  const title = withoutTrailingDate(fullTitle);
+  const html = withoutLeadingTitle(await cleanHtml($body.html() || '', { base: url }), fullTitle);
   const $firstImage = cheerio.load(html, null, false)('img').first();
   return {
     id,

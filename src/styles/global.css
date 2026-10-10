@@ -125,6 +125,38 @@ button {
   }
 }
 
+/* ---------- Low-vision mode ----------
+   Toggled from the header (data-vision="low" on <html>, kept in localStorage):
+   larger text everywhere, black text, darker brand red, visible borders and no motion. */
+
+html[data-vision='low'] {
+  --ink: #000000;
+  --ink-2: #000000;
+  --muted: #1f1f1f;
+  --line: #8c8c8c;
+  --line-2: #4d4d4d;
+  --red: #a3001f;
+  --red-600: #8a001a;
+  font-size: 125%;
+}
+
+html[data-vision='low'] body {
+  line-height: 1.7;
+  letter-spacing: 0.01em;
+}
+
+html[data-vision='low'] .prose a {
+  text-decoration-thickness: 2px;
+}
+
+html[data-vision='low'] *,
+html[data-vision='low'] *::before,
+html[data-vision='low'] *::after {
+  animation-duration: 0.01ms !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
 .skip-link {
   position: absolute;
   left: 16px;

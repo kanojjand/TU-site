@@ -7,6 +7,6 @@
     "width": 1280,
     "height": 437
   },
-  "html": "<p>Академическая политика · PDF</p> <p><a href=\"https://tashenev.edu.kz/docs/Academ/academ-p.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Открыть </a>  <a href=\"https://tashenev.edu.kz/docs/Academ/academ-p.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Скачать </a></p>  <p><a href=\"https://tashenev.edu.kz/docs/Academ/academ-p.pdf#toolbar=0&amp;view=FitH\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">Открыть документ (PDF)</a></p>",
+  "html": "<p>Академическая политика · PDF</p> <ul class=\"links\"><li><a href=\"https://tashenev.edu.kz/docs/Academ/academ-p.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Открыть </a></li><li><a href=\"https://tashenev.edu.kz/docs/Academ/academ-p.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Скачать </a></li></ul>  <p><a href=\"https://tashenev.edu.kz/docs/Academ/academ-p.pdf#toolbar=0&amp;view=FitH\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">Открыть документ (PDF)</a></p>",
   "source": "https://tashenev.edu.kz/ru/academic-policy"
 }

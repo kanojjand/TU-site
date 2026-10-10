@@ -1,0 +1,19 @@
+{
+  "id": 609,
+  "title": "Дорогие студенты! Tashenev University сердечно поздравляет вас с Днём студентов!",
+  "date": "2025-11-17",
+  "rawDate": "2025-11-17",
+  "category": "novosti",
+  "cover": {
+    "src": "/media/card/d6f5e0bb62c60173-800.webp",
+    "width": 800,
+    "height": 1000
+  },
+  "coverSource": "gallery",
+  "excerpt": "Этот день — праздник молодости, стремления к знаниям и больших мечтаний. Спасибо вам за активность, креатив и ваш вклад в развитие нашего университета. Желаем вам: новых знаний и ярких побед, успешных проектов и…",
+  "html": "<p>Этот день — праздник молодости, стремления к знаниям и больших мечтаний. Спасибо вам за активность, креатив и ваш вклад в развитие нашего университета.</p>\n\n\n<p>Желаем вам:</p>\n<p><img src=\"/media/content/b9ab29fcbc40f028-1200.webp\" alt=\"✨\" width=\"32\" height=\"32\" loading=\"lazy\" decoding=\"async\"> новых знаний и ярких побед,</p>\n<p><img src=\"/media/content/b9ab29fcbc40f028-1200.webp\" alt=\"✨\" width=\"32\" height=\"32\" loading=\"lazy\" decoding=\"async\"> успешных проектов и вдохновения,</p>\n<p><img src=\"/media/content/b9ab29fcbc40f028-1200.webp\" alt=\"✨\" width=\"32\" height=\"32\" loading=\"lazy\" decoding=\"async\"> дружбы, энергии и светлого будущего!</p>\n\n\n<p>Пусть ваша студенческая жизнь будет наполнена возможностями и незабываемыми моментами!</p>\n<p>Tashenev University всегда с вами! <img src=\"/media/content/429569d879cc3a69-1200.webp\" alt=\"💙\" width=\"32\" height=\"32\" loading=\"lazy\" decoding=\"async\"><img src=\"/media/content/f883f804da1198b0-1200.webp\" alt=\"🎓\" width=\"32\" height=\"32\" loading=\"lazy\" decoding=\"async\"></p>",
+  "gallery": [
+    "https://tashenev.edu.kz/storage/news/November2025/XZWyW0fZKMb6jVIOs3c5.jpg"
+  ],
+  "source": "https://tashenev.edu.kz/ru/media/item/609"
+}

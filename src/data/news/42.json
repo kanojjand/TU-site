@@ -1,0 +1,23 @@
+{
+  "id": 42,
+  "title": "Ректорский грант",
+  "date": "2021-10-07",
+  "rawDate": "2021-10-07",
+  "category": "novosti",
+  "cover": {
+    "src": "/media/card/58847f22acbde433-800.webp",
+    "width": 800,
+    "height": 232
+  },
+  "coverSource": "hero",
+  "excerpt": "Университет «Сырдария» предоставляет скидки на обучение для студентов, поступающих на платной основе. Об этом свидетельствует тот факт, что в 2020-2021 учебном году 3 студента, набравшие 100 и более баллов по ЕНТ, были…",
+  "html": "<p>Университет «Сырдария» предоставляет скидки на обучение для студентов, поступающих на платной основе.</p>\n<p>Об этом свидетельствует тот факт, что в 2020-2021 учебном году 3 студента, набравшие 100 и более баллов по ЕНТ, были удостоены ректорской стипендии на основании решения Ученого совета (протокол №3 от 29 сентября 2021 года). </p>\n<p>В этом году обладателями ректорского гранта стали:</p><ol><li>Сапарбек Дана Бейсенбековна</li><li>Акбаева Манзура Хакимжановна</li><li>Оралбек Аяулым Азбековна</li></ol>\n<p>Поздравляем обладателей гранта!</p>",
+  "gallery": [
+    "https://tashenev.edu.kz/storage/news/October2021/H28QmxgM9z1sbNjCfJcJ.jpg",
+    "https://tashenev.edu.kz/storage/news/October2021/MU1uhffHSxZoG1jzqE5h.jpg",
+    "https://tashenev.edu.kz/storage/news/October2021/SKvRDEBtoTQKVfqJEKjr.jpg",
+    "https://tashenev.edu.kz/storage/news/October2021/SuGcxaeldPLpzwh5iHcm.jpg",
+    "https://tashenev.edu.kz/storage/news/October2021/SMrZ1NySuzW33UK0wa2a.jpg"
+  ],
+  "source": "https://tashenev.edu.kz/ru/media/item/42"
+}

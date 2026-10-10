@@ -1,0 +1,20 @@
+{
+  "id": 620,
+  "title": "Посвящение студентов в университете",
+  "date": "2025-11-20",
+  "rawDate": "2025-11-20",
+  "category": "novosti",
+  "cover": {
+    "src": "/media/card/f3cf26ce8516ed6d-800.webp",
+    "width": 800,
+    "height": 600
+  },
+  "coverSource": "gallery",
+  "excerpt": "В университете прошло торжественное посвящение первокурсников. Руководство отметило важность события и пожелало студентам успешного начала учебного года.",
+  "html": "<p>В университете прошло торжественное посвящение первокурсников. Руководство отметило важность события и пожелало студентам успешного начала учебного года.</p>",
+  "gallery": [
+    "https://tashenev.edu.kz/storage/news/November2025/88fVQNr4BLbqftw91vUA.jpeg",
+    "https://tashenev.edu.kz/storage/news/November2025/6OPx4fFxV1UQI1TVbu4C.jpeg"
+  ],
+  "source": "https://tashenev.edu.kz/ru/media/item/620"
+}

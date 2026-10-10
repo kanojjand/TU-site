@@ -40,29 +40,34 @@ function createLimiter(concurrency) {
 const limit = createLimiter(3);
 
 // Minimum gap between request starts; doubles on "429 Too Many Requests" and
-// slowly recovers while the server is happy.
+// slowly recovers while the server is happy. Pages also keep under the
+// per-minute limit the server announces in X-RateLimit-Limit (55 in 2026);
+// images are static files and are not throttled.
 const MIN_INTERVAL = 300;
 const MAX_INTERVAL = 5000;
 let interval = MIN_INTERVAL;
+let pageInterval = 0;
 let nextSlot = 0;
 
-async function pace() {
+async function pace(binary) {
   const now = Date.now();
   const wait = Math.max(0, nextSlot - now);
-  nextSlot = Math.max(now, nextSlot) + interval;
+  nextSlot = Math.max(now, nextSlot) + (binary ? interval : Math.max(interval, pageInterval));
   if (wait) await sleep(wait);
 }
 
 async function request(url, { binary = false } = {}) {
   let lastError = '';
   for (let attempt = 1; attempt <= 6; attempt += 1) {
-    await pace();
+    await pace(binary);
     try {
       const res = await fetch(url, {
         headers: { 'User-Agent': USER_AGENT, 'Accept-Language': 'ru-RU,ru;q=0.9' },
         redirect: 'follow',
         signal: AbortSignal.timeout(45_000),
       });
+      const perMinute = Number(res.headers.get('x-ratelimit-limit'));
+      if (perMinute > 0) pageInterval = Math.ceil(60_000 / perMinute) + 100;
       if (res.status === 404 || res.status === 410) return { status: res.status, url: res.url, body: null };
       if (res.status === 429 || res.status === 503) {
         interval = Math.min(interval * 2, MAX_INTERVAL);

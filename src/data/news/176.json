@@ -1,0 +1,19 @@
+{
+  "id": 176,
+  "title": "Ярмарка вакансий \" ЖАС МАМАН - 2022\"",
+  "date": "2022-04-18",
+  "rawDate": "2022-04-18",
+  "category": "obyavleniya",
+  "cover": {
+    "src": "/media/card/0e31c36973355a26-800.webp",
+    "width": 800,
+    "height": 800
+  },
+  "coverSource": "gallery",
+  "excerpt": "Дата: пятница, 29 апреля Время: 11:00 Место проведения: главный учебный корпус, аудитория 1",
+  "html": "<p>Дата: пятница, 29 апреля</p>\n<p>Время: 11:00</p>\n<p>Место проведения: главный учебный корпус, аудитория 1</p>",
+  "gallery": [
+    "https://tashenev.edu.kz/storage/news/April2022/rHG0ojBDnfO5RTrTgXFy.jpg"
+  ],
+  "source": "https://tashenev.edu.kz/ru/media/item/176"
+}

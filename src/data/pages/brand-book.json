@@ -7,6 +7,6 @@
     "width": 1280,
     "height": 437
   },
-  "html": "<p>Brand Book · PDF</p> <p><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Open </a> <a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Download </a></p>  <p><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf#toolbar=0&amp;view=FitH\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">Открыть документ (PDF)</a></p>",
+  "html": "<p>Brand Book · PDF</p> <ul class=\"links\"><li><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Open </a></li><li><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">  Download </a></li></ul>  <p><a href=\"https://tashenev.edu.kz/docs/TashenevUniversity_guideline.pdf#toolbar=0&amp;view=FitH\" data-file=\"pdf\" target=\"_blank\" rel=\"noopener\">Открыть документ (PDF)</a></p>",
   "source": "https://tashenev.edu.kz/ru/brand-book"
 }

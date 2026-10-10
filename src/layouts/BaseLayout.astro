@@ -29,6 +29,12 @@ const ogImage = new URL(url(image ?? '/brand/og.png'), Astro.site).href;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script is:inline>
+      // Low-vision mode chosen in the header; applied before first paint so the page does not jump.
+      try {
+        if (localStorage.getItem('vision') === 'low') document.documentElement.dataset.vision = 'low';
+      } catch {}
+    </script>
     <title>{fullTitle}</title>
     {description && <meta name="description" content={description} />}
     <link rel="canonical" href={canonical} />

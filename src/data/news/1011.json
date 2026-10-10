@@ -1,0 +1,23 @@
+{
+  "id": 1011,
+  "title": "Объявление",
+  "date": "2026-04-14",
+  "rawDate": "2026-04-14",
+  "category": "novosti",
+  "cover": {
+    "src": "/media/card/e9218c0c74a409ca-800.webp",
+    "width": 800,
+    "height": 533
+  },
+  "coverSource": "gallery",
+  "excerpt": "В Университете имени Жумабека Ахметулы Ташенева началась процедура аккредитации 14 апреля 2026 года в Университете имени Жумабека Ахметулы Ташенева внешняя экспертная группа Независимого казахстанского центра…",
+  "html": "<p><strong>В Университете имени Жумабека Ахметулы Ташенева началась процедура аккредитации</strong></p>\n<p>14 апреля 2026 года в Университете имени Жумабека Ахметулы Ташенева внешняя экспертная группа Независимого казахстанского центра аккредитации начала работу по проведению институциональной и специализированной аккредитации 22 образовательных программ.</p>\n<p>Данный процесс осуществляется в целях повышения качества образования в университете, обеспечения соответствия учебных программ международным стандартам и повышения общего уровня образовательного учреждения.</p>",
+  "gallery": [
+    "https://tashenev.edu.kz/storage/news/April2026/VfmGHcr2TiTAmWC6c6qj.jpg",
+    "https://tashenev.edu.kz/storage/news/April2026/YpRn5xppAm6AY0fGbNba.jpg",
+    "https://tashenev.edu.kz/storage/news/April2026/e8cemjUaiOvBqXC9faS5.jpg",
+    "https://tashenev.edu.kz/storage/news/April2026/aE9FDF2e18zd2aE6SQd5.jpg",
+    "https://tashenev.edu.kz/storage/news/April2026/dnfgPiaj6vBkuQKeXedr.jpg"
+  ],
+  "source": "https://tashenev.edu.kz/ru/media/item/1011"
+}
